@@ -8,6 +8,7 @@ import grouper
 PC_MOVE = 1
 UT_MOVE = 2
 GROUP_DEL = 3
+SCORE_ADD = 4
 
 class Game:
 
@@ -35,7 +36,7 @@ class Game:
         v = self.board.get_value(fc)
         self.board.set_value(fc, 0)
         self._fill_pos(tc, v)
-        self._history.append( (UT_MOVE, (fc, tc)) ) # save move ut
+        self._history.append( (UT_MOVE, fc, tc) ) # save move ut
         self._add_random_stones()
         
     def _add_random_stones(self):
@@ -51,7 +52,7 @@ class Game:
         self._groups_removed = []
         for c,v in zip(cc,vv):
             self._fill_pos(c,v)
-            self._history.append( (PC_MOVE, c[:], v) ) # save move pc
+            self._history.append( (PC_MOVE, tuple(c), v) ) # save move pc
 
     def undo(self):
     	length = len(self._history)
@@ -59,9 +60,21 @@ class Game:
     		return    	
     	
     	for i in range(length-1, 0, -1):
-    		if self._history[i][0] == UT_MOVE:
+    		move = self._history[i]
+    		if move[0] == UT_MOVE:
+    			self.board.set_value(move[1], self.board.get_value(move[2]))
+    			self.board.set_value(move[2], 0)
     			del self._history[i]
     			return
+
+    		else if move[0] == PC_MOVE:
+    			self.board.set_value(move[1], 0)
+    		else if move[0] == GROUP_DEL:
+    			for c in move[1]:
+    				self.board.set_value(c, move[2])
+    		else: # score
+    			self._score -= move[1]
+
     		del self._history[i]
 
 
@@ -128,9 +141,10 @@ class Game:
             for c in g:
                 # print "__fill_pos group:", g
                 self.board.set_value(c, 0)
-            self._history.append( (GROUP_DEL, g[:]) ) # save groupe deleting
+            self._history.append( (GROUP_DEL, tuple(g), value) ) # save groupe deleting
 
         self._score += self._get_points_for_groups(gg)
+		self._history.append( (SCORE_ADD, self._get_points_for_groups(gg)) ) # save score adding
         self._groups_removed.extend(gg)
         
     def _get_points_for_groups(self, gg):
