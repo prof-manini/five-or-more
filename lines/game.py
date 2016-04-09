@@ -53,6 +53,18 @@ class Game:
             self._fill_pos(c,v)
             self._history.append( (PC_MOVE, c[:], v) ) # save move pc
 
+    def undo(self):
+    	length = len(self._history)
+    	if length == 0:
+    		return    	
+    	
+    	for i in range(length-1, 0, -1):
+    		if self._history[i][0] == UT_MOVE:
+    			del self._history[i]
+    			return
+    		del self._history[i]
+
+
     # comoda nel debugging!
     def debug_add_random_stones(self):
         self._add_random_stones()
@@ -116,7 +128,7 @@ class Game:
             for c in g:
                 # print "__fill_pos group:", g
                 self.board.set_value(c, 0)
-            self._history.append( (GROUP_DEL, g[:]) )
+            self._history.append( (GROUP_DEL, g[:]) ) # save groupe deleting
 
         self._score += self._get_points_for_groups(gg)
         self._groups_removed.extend(gg)
