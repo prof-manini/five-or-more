@@ -53,13 +53,13 @@ class Walker:
         for p in self.paths:
             cc = self._get_friends(p[-1])
             
-            self.visited.extend(cc)
+            self.visited.extend(cc) # function list.extend() ??????
             if cc: found = True
             # if not cc: self.paths.remove(p)
             for c in cc:
-                n = p[:]
-                n.append(c)
-                pp.append(n)
+                n = p[:] # copia senza riferimenti all'oggetto
+                n.append(c) # percorso.aggiungi(cella_friend)
+                pp.append(n) # aggiungo il percorso con una cella_friend ai percorsi
                 #print map(str,n)
         self.paths = pp
         return found

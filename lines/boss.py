@@ -51,5 +51,5 @@ class Boss:
             yield rcv
 
     def get_raw_data(self):
-        return self._board.get_raw_data()
+        return self._board.get_raw_data() # restituisce la matrice dei colori delle celle
         

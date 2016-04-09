@@ -12,10 +12,12 @@ def iterate_raw_data(data):
         for c, v in enumerate(row):
             yield r,c,v
 
-def load_integers_into_data(data, size = None):
-    rows = load_integers(size)
+## uncorrect function
+def load_integers_into_data(file, data, size = None):
+    rows = common.load_integers(file, size)
     for r,c,v in iterate_raw_data(rows):
-        data.set_value((r,c),v)
+    	common.check_pos_in_size((r,c), size)
+        data[r][c] = v
       
 def get_data_size(data):
     "Le dimensioni (righe, colonne) di una lista di liste"
@@ -24,11 +26,12 @@ def get_data_size(data):
 class Board:
 
     def __init__(self, size):
-        self.data = make_data(size)
+        self.data = make_data(size) # crea matrice (valore iniziale None)
         for r,c,v in self:
             self.set_value((r,c), 0)
             
     def __iter__(self):
+    	# funzione iterate_raw_data() già presente        
         for r, row in enumerate(self.data):
             for c, v in enumerate(row):
                 yield r,c,v
@@ -55,11 +58,15 @@ class Board:
 
     def load_file(self, file):
         "Legge un file di interi scritti come righe/colonne"
-        load_integers_into_data(file, self.data, size)
+        try:
+        	load_integers_into_data(file, self.data, size)
+        	return 1
+        except common.FileError:
+        	return 0
 
     def is_free(self, pos):
         "True se il valore in POS è zero"
-        self.check_pos(pos)       
+        #self.check_pos(pos) # get_value() controlla già la pos
         return self.get_value(pos) == 0
 
     def check_pos(self, pos):

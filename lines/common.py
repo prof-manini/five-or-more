@@ -1,5 +1,6 @@
 # -*- coding: iso-latin-1 -*-
 class LinesError(Exception): pass
+class FileError(Exception): pass ## added
 
 MAX_VALUE = 8
 
@@ -18,9 +19,13 @@ def check_pos_in_size(pos, size):
             (pos, r-1, c-1)
         raise LinesError, s
 
+## changed exceptions raised
 def load_integers(file, size = None):
     "Carica una matrice di dimensione SIZE e di interi tra zero e MAX_VALUE"
-    file = open(file)
+    try:
+    	file = open(file)
+    except:
+        raise FileError, "Unable to open '%s'."%file
     try:
         rows = [s.strip().split() for s in file]
         rc = len(rows)
@@ -47,9 +52,10 @@ def load_integers(file, size = None):
                       % (i + 1, file, MAX_VALUE)
             ss.append(s)
         return ss
-    except:
-        file.close()
-        raise
+    except Exception as e:
+    	raise FileError, "Not correct data in file: " + e.message
+    finally:
+    	file.close()
 
 def random_values(count, zeros):
     import random
