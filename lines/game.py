@@ -155,6 +155,9 @@ class Game:
     def _update_next_values(self):
         self._next_values = common.random_values(self._NEXT_VALUES_COUNT, 0)
     
+    def get_data(self):
+    	return self._history, self._next_values
+
 #     def add_some_random(self, count = 3):
 #         "Aggiunge COUNT pietre con valori random (non nulli)"
 #         pp = self.board.get_all_empty()

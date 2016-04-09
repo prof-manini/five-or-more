@@ -1,5 +1,6 @@
 # -*- coding: iso-latin-1 -*-
 import game
+from datetime import datetime
 
 class Boss:
 
@@ -25,10 +26,20 @@ class Boss:
         # game.set_data...
         pass
 
-    def save_to_file(self, file):
-        # data = game.get_data ...
-        # save data to file
-        pass
+    def save_to_file(self, file=None):
+        if not file:
+        	date = datetime.now().timetuple()[0:7]
+        	file = "saves/data%d%d%d%d%d%d%d"%date
+        history, next_values = game.get_data()
+
+        f = open(file, "w")
+        try:        	
+        	f.writelines(str(history), str(next_values))
+        	return file
+        except:
+        	return None
+        finally:
+        	f.close()
 
     # query
     def get_size(self):
