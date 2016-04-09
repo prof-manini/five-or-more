@@ -112,7 +112,9 @@ class Game:
         self._groups_removed.extend(gg)
         
     def _get_points_for_groups(self, gg):
-        return sum(map(len, gg))
+        #return sum(map(len, gg))
+        import math
+        return sum([l**len(gg) for l in map(len, gg)])
 
     def _update_next_values(self):
         self._next_values = common.random_values(self._NEXT_VALUES_COUNT, 0)
