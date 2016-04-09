@@ -4,6 +4,11 @@ import board
 import walker
 import grouper
 
+# types of moves for history
+PC_MOVE = 1
+UT_MOVE = 2
+GROUP_DEL = 3
+
 class Game:
 
     _NEXT_VALUES_COUNT = 3
@@ -22,12 +27,15 @@ class Game:
         self._stone_added    = []
         self._groups_removed = []
 
+        self._history = [] # history of all moves
+
     # commands
     def move(self, fc, tc):
         self._check_can_move(fc, tc)
         v = self.board.get_value(fc)
         self.board.set_value(fc, 0)
         self._fill_pos(tc, v)
+        self._history.append( (UT_MOVE, (fc, tc)) ) # save move ut
         self._add_random_stones()
         
     def _add_random_stones(self):
@@ -43,6 +51,7 @@ class Game:
         self._groups_removed = []
         for c,v in zip(cc,vv):
             self._fill_pos(c,v)
+            self._history.append( (PC_MOVE, c[:], v) ) # save move pc
 
     # comoda nel debugging!
     def debug_add_random_stones(self):
@@ -107,6 +116,7 @@ class Game:
             for c in g:
                 # print "__fill_pos group:", g
                 self.board.set_value(c, 0)
+            self._history.append( (GROUP_DEL, g[:]) )
 
         self._score += self._get_points_for_groups(gg)
         self._groups_removed.extend(gg)
