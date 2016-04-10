@@ -16,7 +16,7 @@ images = [ "empty.png", "blue.png", "light-blue.png", "purple.png",
 
 def get_image(value):
     path = os.path.join(image_dir, images[value])
-    print path
+    #print path
     return path
 
 class StoneCell(gtk.Button):
@@ -31,7 +31,7 @@ class StoneCell(gtk.Button):
         self.add(self.image)
 
     def set_value(self, value):
-        print value
+        #print value
         self.image.set_from_file(get_image(value))
     
 class ButtonCell(gtk.Button):
