@@ -15,44 +15,50 @@ class Boss:
     
     # command
     def new_empty_game(self, size = (9,9)):
-        self._game  = game.Game(size)
+        self._game  = game.Game(size = size)
         self._board = self._game.get_board()
 
     def move(self, fc, tc):
         self._game.move(fc, tc)
 
-    def load_from_file(self, file=None):
-        # check file ....
-        # game.set_data...
-        pass
+    def load_game(self, file):
+        f = open(file)
+        # controllare file
+        data = eval(f.readline())
+        self._game  = game.Game(size = self.get_size(), data = data)
+        self._board = self._game.get_board()
 
-    def save_to_file(self, file=None):
+
+    def save_game(self, file=None):
         if not file:
         	date = datetime.now().timetuple()[0:7]
-        	file_data = "saves/data%d%d%d%d%d%d%d"%date
-        	file_board = "saves/board%d%d%d%d%d%d%d"%date
-        else:
-        	file_data = "saves/"+file+"data"
-        	file_board = "saves/"+file+"board"
-        history, next_values, board = game.get_data()
+        	file = "saves/data%d.%d.%d.%d.%d.%d.%d"%date
 
-        f = open(file_data, "w")
+        f = open(file, "w")
         try:        	
-        	f.writelines(str(history), str(next_values))
+        	f.writelines(repr(self._game.get_data()))
         except:
-        	return None
+        	pass
         finally:
         	f.close()
+        return file
 
-        f = open(file_board, "w")
-        try:        	
-        	f.writelines(str(board))
-        except:
-        	return None
-        finally:
-        	f.close()
+    def save_score(self, file_score):
+    	file = "lines/"+file_score
+    	scores = []
+    	try:
+    		f = open(file)
+    		scores = f.readlines()
+    		f.close()
+    	except:
+    		pass
 
-        return file_data, file_board
+    	date = datetime.now().timetuple()[0:7]
+    	scores.append("%d %d.%d.%d.%d.%d.%d.%d"%tuple(tuple(self.get_score())+date))
+    	
+    	f = open(file, "w")
+    	f.writelines(scores)
+    	f.close()
 
 
     # query
@@ -78,3 +84,5 @@ class Boss:
     def get_raw_data(self):
         return self._board.get_raw_data() # restituisce la matrice dei colori delle celle
         
+    def is_there_free_cells(self):
+    	return len(self._board.get_all_empty())>0

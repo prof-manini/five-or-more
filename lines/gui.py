@@ -160,14 +160,20 @@ class Window(gui_base.FullWindow):
                 self.selected_pos = None
             else:
                 if is_free(new):
-                   if self.boss.can_move(old, new):
-                       self.show_message("Moving %s to %s" %
-                                         (str(old), str(new)))
-                       self.do_move(old, new)
-                       self.selected_pos = None
-                   else:
-                       self.show_message("NO path from %s to %s" %
-                                         (str(old), str(new)))
+					if self.boss.can_move(old, new):
+						self.show_message("Moving %s to %s" %
+							(str(old), str(new)))
+						self.do_move(old, new)
+						self.selected_pos = None
+
+						## aggiunto controllo che il gioco non sia finito
+						if not self.boss.is_there_free_cells():
+							self.show_message("Game Over! Score: %d... saved!"%self.boss.get_score())
+							## da fare salvataggio punteggio
+							self.boss.save_score("scores")
+					else:
+						self.show_message("NO path from %s to %s" % 
+						(str(old), str(new)))
                 else:
                     self.show_message("Cell at %s selected" % str(new))
                     self.selected_pos = new

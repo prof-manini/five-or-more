@@ -27,12 +27,13 @@ class Game:
         self._groups_removed = []
 
         self._history = []
-        
+
         if not data:
         	self._update_next_values()
         	self._add_random_stones()
         else:
-	    	history, next_values, matrix = data
+	    	history, next_values, matrix, score = data
+	    	self._score = score
 	    	self._history = history
 	    	self._next_values = next_values
 	    	self.board.load_data(matrix)    	
@@ -48,7 +49,7 @@ class Game:
         
     def _add_random_stones(self):
         vv = self._take_next_values()
-        cc = self.board.get_all_empty()[:len(vv)]
+        cc = self.board.get_all_empty()[:len(vv)] ## se non ci sono abbastanza celle libere dovrebbe dare errore
         # print "free:", cc
         if len(cc) == 0:
             raise common.LinesError, "Non ci sono celle libere!"
@@ -156,13 +157,13 @@ class Game:
     def _get_points_for_groups(self, gg):
         #return sum(map(len, gg))
         import math
-        return sum([l**len(gg) for l in map(len, gg)])
+        return sum([l**(len(gg)+1) for l in map(len, gg)])
 
     def _update_next_values(self):
         self._next_values = common.random_values(self._NEXT_VALUES_COUNT, 0)
     
     def get_data(self):
-    	return self._history, self._next_values, self.board.get_raw_data()
+    	return self._history, self._next_values, self.board.get_raw_data(), self._score
 
    #  def _restore_history(self):
    #  	for move in self._history:

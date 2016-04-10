@@ -58,14 +58,14 @@ class Board:
     def load_file(self, file):
         "Legge un file di interi scritti come righe/colonne"
         try:
-        	rows = common.load_integers(file, size)
-        	load_integers_into_data(rows, self.data, size)
+        	rows = common.load_integers(file, self.get_size())
+        	load_integers_into_data(rows, self.data, self.get_size())
         	return 1
         except:
         	return 0
     def load_data(self, rows):
     	try:
-    		load_integers_into_data(rows, self.data, size)
+    		load_integers_into_data(rows, self.data, self.get_size())
         	return 1
         except:
         	return 0
