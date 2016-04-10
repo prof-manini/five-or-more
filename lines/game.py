@@ -14,21 +14,28 @@ class Game:
 
     _NEXT_VALUES_COUNT = 3
 
-    def __init__(self, size = (9,9)):
-        self.size = size
+    def __init__(self, size = (9,9), data = None):
+    	self.size = size
 
         self.board = board.Board(self.size)
         self.walker = walker.Walker()
         self.grouper = grouper.Grouper()
 
         self._score = 0
-        self._update_next_values()
-        self._add_random_stones()
 
         self._stone_added    = []
         self._groups_removed = []
 
-        self._history = [] # history of all moves
+        self._history = []
+        
+        if not data:
+        	self._update_next_values()
+        	self._add_random_stones()
+        else:
+	    	history, next_values, matrix = data
+	    	self._history = history
+	    	self._next_values = next_values
+	    	self.board.load_data(matrix)    	
 
     # commands
     def move(self, fc, tc):
@@ -67,16 +74,15 @@ class Game:
     			del self._history[i]
     			return
 
-    		else if move[0] == PC_MOVE:
+    		elif move[0] == PC_MOVE:
     			self.board.set_value(move[1], 0)
-    		else if move[0] == GROUP_DEL:
+    		elif move[0] == GROUP_DEL:
     			for c in move[1]:
     				self.board.set_value(c, move[2])
     		else: # score
     			self._score -= move[1]
 
     		del self._history[i]
-
 
     # comoda nel debugging!
     def debug_add_random_stones(self):
@@ -144,8 +150,8 @@ class Game:
             self._history.append( (GROUP_DEL, tuple(g), value) ) # save groupe deleting
 
         self._score += self._get_points_for_groups(gg)
-		self._history.append( (SCORE_ADD, self._get_points_for_groups(gg)) ) # save score adding
-        self._groups_removed.extend(gg)
+        self._history.append( (SCORE_ADD, self._get_points_for_groups(gg)) ) # save score adding
+       	self._groups_removed.extend(gg)
         
     def _get_points_for_groups(self, gg):
         #return sum(map(len, gg))
@@ -156,7 +162,24 @@ class Game:
         self._next_values = common.random_values(self._NEXT_VALUES_COUNT, 0)
     
     def get_data(self):
-    	return self._history, self._next_values
+    	return self._history, self._next_values, self.board.get_raw_data()
+
+   #  def _restore_history(self):
+   #  	for move in self._history:
+			# if move[0] == UT_MOVE:
+   #  			self.board.set_value(move[1], self.board.get_value(move[2]))
+   #  			self.board.set_value(move[2], 0)
+   #  			del self._history[i]
+   #  			return
+
+   #  		else if move[0] == PC_MOVE:
+   #  			self.board.set_value(move[1], 0)
+   #  		else if move[0] == GROUP_DEL:
+   #  			for c in move[1]:
+   #  				self.board.set_value(c, move[2])
+   #  		else: # score
+   #  			self._score -= move[1]
+
 
 #     def add_some_random(self, count = 3):
 #         "Aggiunge COUNT pietre con valori random (non nulli)"

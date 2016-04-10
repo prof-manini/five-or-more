@@ -13,8 +13,7 @@ def iterate_raw_data(data):
             yield r,c,v
 
 ## uncorrect function
-def load_integers_into_data(file, data, size = None):
-    rows = common.load_integers(file, size)
+def load_integers_into_data(rows, data, size = None):
     for r,c,v in iterate_raw_data(rows):
     	common.check_pos_in_size((r,c), size)
         data[r][c] = v
@@ -59,9 +58,16 @@ class Board:
     def load_file(self, file):
         "Legge un file di interi scritti come righe/colonne"
         try:
-        	load_integers_into_data(file, self.data, size)
+        	rows = common.load_integers(file, size)
+        	load_integers_into_data(rows, self.data, size)
         	return 1
-        except common.FileError:
+        except:
+        	return 0
+    def load_data(self, rows):
+    	try:
+    		load_integers_into_data(rows, self.data, size)
+        	return 1
+        except:
         	return 0
 
     def is_free(self, pos):
