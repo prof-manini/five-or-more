@@ -62,18 +62,26 @@ class Game:
             self._fill_pos(c,v)
             self._history.append( (PC_MOVE, tuple(c), v) ) # save move pc
 
-    def undo(self):
+    def undo(self): # next stones rimangono quelle prestabilite... non ripristinate
     	length = len(self._history)
     	if length == 0:
     		return    	
     	
+    	mossa_utente_trovata = False
+    	for mossa in self._history[::-1]:
+    		if mossa[0] == UT_MOVE:
+    			mossa_utente_trovata = True
+    			break
+    	if not mossa_utente_trovata:
+    		return False
+
     	for i in range(length-1, 0, -1):
     		move = self._history[i]
     		if move[0] == UT_MOVE:
     			self.board.set_value(move[1], self.board.get_value(move[2]))
     			self.board.set_value(move[2], 0)
     			del self._history[i]
-    			return
+    			return True
 
     		elif move[0] == PC_MOVE:
     			self.board.set_value(move[1], 0)

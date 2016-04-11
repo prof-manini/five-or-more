@@ -42,6 +42,9 @@ class ButtonCell(gtk.Button):
         gtk.Button.__init__(self, None)
 
         self.image = gtk.Image()
+        #pixbuf = gtk.gdk.pixbuf_new_from_file(get_image(0))
+        #pixbuf = pixbuf.scale_simple(8, 8, gtk.gdk.INTERP_BILINEAR)
+        #self.image = gtk.image_new_from_pixbuf(pixbuf)
         self.add(self.image)
 
         self.pos = pos
@@ -170,7 +173,7 @@ class Window(gui_base.FullWindow):
 						if not self.boss.is_there_free_cells():
 							self.show_message("Game Over! Score: %d... saved!"%self.boss.get_score())
 							## da fare salvataggio punteggio
-							self.boss.save_score("scores")
+							self.boss.save_score()
 					else:
 						self.show_message("NO path from %s to %s" % 
 						(str(old), str(new)))
@@ -186,6 +189,8 @@ class Window(gui_base.FullWindow):
             ("_New",  self.on_new_game),
             ("_Open", self.on_load_game),
             ("_Save", self.on_save_game),
+            ("_Records", self.on_records),
+            ("Undo", self.on_undo),
             ("-", None),
             ("_Quit", self.destroy),
             ))
@@ -228,9 +233,28 @@ class Window(gui_base.FullWindow):
         self.update_from_boss()
         
     def on_save_game(self, widget):
-        s = utils.choose_file_for_save()
-        if s: self.show_message("Saving to: %s" % s)
-        self.boss.save_game(s)
+        #s = utils.choose_file_for_save()
+        #if s: self.show_message("Saving to: %s" % s)
+        file = None
+        self.show_message("Saving...")
+        self.boss.save_game(file)
+
+    def on_records(self, widget):
+    	records = self.boss.load_records()
+    	s = ""
+    	for i, r in enumerate(records):
+    		s += "%d) %d "%(i+1,r)
+    	if s:
+    		self.show_message(s)
+    	else:
+    		self.show_message("Nessun record.")
+
+    def on_undo(self, widget):
+        if self.boss.undo():
+            self.show_message("Undo...")
+            self.update_from_boss()
+        else:
+            self.show_message("Can not undo.")
 
     # chiamate verso il "boss"
     def do_move(self, fc, tc):

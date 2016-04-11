@@ -43,8 +43,10 @@ class Boss:
         	f.close()
         return file
 
-    def save_score(self, file_score):
-    	file = "lines/"+file_score
+    def save_score(self, file=None):
+    	if not file:
+    		file = "saves/scores"
+
     	scores = []
     	try:
     		f = open(file)
@@ -54,11 +56,35 @@ class Boss:
     		pass
 
     	date = datetime.now().timetuple()[0:7]
-    	scores.append("%d %d.%d.%d.%d.%d.%d.%d"%tuple(tuple(self.get_score())+date))
+    	scores.append("%d %d.%d.%d.%d.%d.%d.%d"%tuple([self.get_score()]+list(date)))
     	
-    	f = open(file, "w")
+    	f = open(file, "w") ## controllare che cartella di salvataggio esista, altrimenti crearla
     	f.writelines(scores)
     	f.close()
+
+    def load_score(self, file=None):
+    	if not file:
+    		file = "saves/scores"
+
+    	scores = []
+    	try:
+    		with open(file) as f:
+    			for line in f.readlines():
+    				points, date = line.strip().split()
+    				scores.append(int(points))
+    	except Exception as e:
+    		print(e)
+    	return scores
+
+    def load_records(self, file=None):
+    	scores = self.load_score(file)
+    	scores.sort(reverse=True)
+    	return scores
+
+    def undo(self):
+    	result = self._game.undo()
+    	self._board = self._game.get_board()
+    	return result
 
 
     # query
