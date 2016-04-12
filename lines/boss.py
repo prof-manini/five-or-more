@@ -3,6 +3,8 @@ import game
 from datetime import datetime
 import common
 
+HOME_DIR = common.get_home_dir()+"/" ## forse sotto windows non funziona?
+
 class Boss:
 
 	"""Boss fornisce una interfaccia unica, di alto livello, verso le GUI.
@@ -25,21 +27,23 @@ class Boss:
 	def load_game(self, file):
 		ss = common.read_file(file)
 		## controllare validità dati
-		data = eval("\n".join(ss))
-		self._game  = game.Game(size = self.get_size(), data = data)
-		self._board = self._game.get_board()
+
+		if ss:
+			data = eval("\n".join(ss))
+			self._game  = game.Game(size = self.get_size(), data = data)
+			self._board = self._game.get_board()
 
 	def save_game(self, file=None):
 	    if not file:
 	    	date = datetime.now().timetuple()[0:7]
-	    	file = "saves/data%d.%d.%d.%d.%d.%d.%d"%date
+	    	file = HOME_DIR+".saves/data%d.%d.%d.%d.%d.%d.%d"%date
 
 	    common.write_file(file, repr(self._game.get_data()))
 	    return file
 
 	def save_score(self, file=None):
 		if not file:
-			file = "saves/scores"
+			file = HOME_DIR+".saves/scores"
 
 		scores = common.read_file(file)
 
@@ -51,7 +55,7 @@ class Boss:
 
 	def load_score(self, file=None):
 		if not file:
-			file = "saves/scores"
+			file = HOME_DIR+".saves/scores"
 		
 		ss = common.read_file(file)
 

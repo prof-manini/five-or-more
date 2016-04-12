@@ -108,3 +108,9 @@ def write_file(file, ss):
 		raise common.FileError, "Error to write data to file '%s'\n"%file
 	finally:
 		f.close()
+
+def get_home_dir():
+	try:
+		return os.path.expanduser("~")
+	except:
+		return ""
