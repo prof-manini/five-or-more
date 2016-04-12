@@ -6,6 +6,7 @@ clean:
 cleaner: clean
 	rm -rf html
 	rm -f TAGS
+	rm -rf saves
 	rm -rf README.pdf
 	(cd lines; make cleaner)
 

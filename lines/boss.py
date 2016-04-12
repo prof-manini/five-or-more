@@ -84,7 +84,7 @@ class Boss:
     def undo(self):
     	result = self._game.undo()
     	self._board = self._game.get_board()
-    	return result
+    	return result # result tell us if you can go undo or not
 
 
     # query
