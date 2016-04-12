@@ -69,41 +69,41 @@ def random_values(count, zeros):
     return ii
     
 
-def load_file(file):
+def read_file(file):
 	if not (os.path.exists(file) and os.path.isfile(file)):
 		raise FileError, "File '%s' don't exists."%file
-	
-	try:
-    	f = open(file)
-    except Exception as e:
-    	raise FileError, "Error to open file '%s'."%file
 
-    ss = []
-    try:
-    	ss = f.readlines()
-    except Exception as e:
-    	raise FileError, "Error to read data from file '%s'."%file
-    finally:
-    	f.close()
-    	
-    return ss
+	try:
+		f = open(file)
+	except Exception as e:
+		raise FileError, "Error to open file '%s'."%file
+
+	ss = []
+	try:
+		ss = f.readlines()
+	except Exception as e:
+		raise FileError, "Error to read data from file '%s'."%file
+	finally:
+		f.close()
+
+	return ss
 
 def write_file(file, ss):
 	path, _ = os.path.split(file)
-	if not (os.path.exist(path) and os.path.isdir(path)):
+	if not (os.path.exists(path) and os.path.isdir(path)):
 		try:
-    		os.mkdir(path)
-    	except Exception as e:
-    		raise common.FileError, "Error to create directory '%s'."%path
+			os.mkdir(path)
+		except Exception as e:
+			raise common.FileError, "Error to create directory '%s'."%path
 
-    try:
-    	f = open(file, "w")
-    except Exception as e:
-    	raise common.FileError, "Can't create file '%s'\n"%file
+	try:
+		f = open(file, "w")
+	except Exception as e:
+		raise common.FileError, "Can't create file '%s'\n"%file
 
-    try:        	
-    	f.writelines(ss)
-    except Exception as e:
-    	raise common.FileError, "Error to write data to file '%s'\n"%file
-    finally:
-    	f.close()
+	try:        	
+		f.writelines(ss)
+	except Exception as e:
+		raise common.FileError, "Error to write data to file '%s'\n"%file
+	finally:
+		f.close()
