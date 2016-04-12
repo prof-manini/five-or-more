@@ -25,7 +25,7 @@ class Boss:
 	def load_game(self, file):
 		ss = common.read_file(file)
 		## controllare validità dati
-		data = eval('\n'.join(ss))
+		data = eval("\n".join(ss))
 		self._game  = game.Game(size = self.get_size(), data = data)
 		self._board = self._game.get_board()
 
@@ -52,9 +52,11 @@ class Boss:
 	def load_score(self, file=None):
 		if not file:
 			file = "saves/scores"
+		
+		ss = common.read_file(file)
 
 		scores = []
-		for line in common.read_file(file):
+		for line in ss:
 			## controllare dati
 			points, date = line.strip().split()
 			scores.append(int(points))

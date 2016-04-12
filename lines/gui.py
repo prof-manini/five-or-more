@@ -225,6 +225,7 @@ class Window(gui_base.FullWindow):
     def on_new_game(self, widget):
         self.boss.new_empty_game(self.size)
         self.update_from_boss()
+        self.show_message("New Game.")
         
     def on_load_game(self, widget):
         s = utils.choose_file_for_open()

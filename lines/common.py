@@ -71,7 +71,8 @@ def random_values(count, zeros):
 
 def read_file(file):
 	if not (os.path.exists(file) and os.path.isfile(file)):
-		raise FileError, "File '%s' don't exists."%file
+		#raise FileError, "File '%s' don't exists."%file
+		return []
 
 	try:
 		f = open(file)
