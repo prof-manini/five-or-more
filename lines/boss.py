@@ -1,6 +1,7 @@
 # -*- coding: iso-latin-1 -*-
 import game
 from datetime import datetime
+import common
 
 class Boss:
 
@@ -22,58 +23,42 @@ class Boss:
         self._game.move(fc, tc)
 
     def load_game(self, file):
-        f = open(file)
-        # controllare file
-        data = eval(f.readline())
-        self._game  = game.Game(size = self.get_size(), data = data)
-        self._board = self._game.get_board()
-
+    	ss = common.read_file(file)
+    	## controllare validità dati
+    	data = eval(ss)
+    	self._game  = game.Game(size = self.get_size(), data = data)
+		self._board = self._game.get_board()
 
     def save_game(self, file=None):
         if not file:
         	date = datetime.now().timetuple()[0:7]
         	file = "saves/data%d.%d.%d.%d.%d.%d.%d"%date
 
-        f = open(file, "w")
-        try:        	
-        	f.writelines(repr(self._game.get_data()))
-        except:
-        	pass
-        finally:
-        	f.close()
+        common.write_file(file, repr(self._game.get_data()))
         return file
 
     def save_score(self, file=None):
     	if not file:
     		file = "saves/scores"
 
-    	scores = []
-    	try:
-    		f = open(file)
-    		scores = f.readlines()
-    		f.close()
-    	except:
-    		pass
+    	scores = common.read_file(file)
 
     	date = datetime.now().timetuple()[0:7]
     	scores.append("%d %d.%d.%d.%d.%d.%d.%d"%tuple([self.get_score()]+list(date)))
     	
-    	f = open(file, "w") ## controllare che cartella di salvataggio esista, altrimenti crearla
-    	f.writelines(scores)
-    	f.close()
+    	common.write_file(scores)
+    	return file
 
     def load_score(self, file=None):
     	if not file:
     		file = "saves/scores"
 
     	scores = []
-    	try:
-    		with open(file) as f:
-    			for line in f.readlines():
-    				points, date = line.strip().split()
-    				scores.append(int(points))
-    	except Exception as e:
-    		print(e)
+    	for line in common.read_file(file):
+    		## controllare dati
+    		points, date = line.strip().split()
+    		scores.append(int(points))
+    		
     	return scores
 
     def load_records(self, file=None):
