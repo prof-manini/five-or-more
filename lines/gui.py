@@ -2,6 +2,7 @@
 
 import os
 import random
+import time
 
 import gtk
 
@@ -88,11 +89,30 @@ class Grid(gtk.Table):
     
     def update_from_boss(self, boss):
         "Aggiorna la scacchiera con i dati della BOARD"
-        cell = self.cells.get_value
+        cell = self.cells.get_value ## ????
         for r,c,v in boss.get_data():
             pos = r,c
             # print "Setting %s to %d" % (str(pos), v)
             cell(pos).set_value(v)
+
+    def animation_stone(self, path, delay=500):
+        cell = self.cells.get_value
+
+        v = cell(path[0]).value
+        cell(path[0]).set_value(0) # tolgo stone
+        time.sleep(delay/1000)
+        for c in path[1:-1]:
+            cell(c).set_value(v)
+            time.sleep(delay/1000)
+
+    def step_cell(self, fc, tc):
+        #raise "NotImplemented"
+        cell = self.cells.get_value
+        cell(tc).set_value(cell(fc).value)
+        cell(fc).set_value(0)
+        x = 400
+        cell(tc).queue_draw_area(0, 0, x, x)
+        cell(fc).queue_draw_area(0, 0, x, x)
 
 class Window(gui_base.FullWindow):
 
@@ -106,7 +126,8 @@ class Window(gui_base.FullWindow):
 
         # costruzione di parti dinamiche che dipendono da game
         self._make_menus()
-        c = self._make_content()
+        self.grid = None
+        c = self._make_content() # create self.grid
         self.set_content(c)
 
         # altri setting della finestra
@@ -115,7 +136,7 @@ class Window(gui_base.FullWindow):
         self.selected_pos = None
 
         # mostra la situazione iniziale del gioco
-        self.update_from_boss() 
+        self.update_from_boss()
 
     def _make_next_stones(self):
         h  = gtk.HBox(gtk.FALSE, 3)
@@ -135,17 +156,7 @@ class Window(gui_base.FullWindow):
         v = gtk.VBox(gtk.FALSE, 2)
         v.pack_start(b,         gtk.FALSE, gtk.FALSE, 0)
         v.pack_end  (self.grid, gtk.TRUE,  gtk.TRUE,  0)
-        return v
-
-    def step_cell(self, fc, tc):
-        raise "NotImplemented"
-        mess = "stepping %s -> %s" % (fc, tc)
-        self.show_message(mess)
-        tc.set_value(fc.value)
-        fc.set_value(0)
-        x = 400
-        tc.queue_draw_area(0, 0, x, x)
-        fc.queue_draw_area(0, 0, x, x)
+        return v    
 
     def on_cell_clicked(self, widget, data = None):
         old = self.selected_pos
@@ -211,9 +222,9 @@ class Window(gui_base.FullWindow):
         self._score_label.set_text("Punteggio: %3d" % s)
         
     def update_from_boss(self):
-            self.grid.update_from_boss(self.boss)
-            self._update_next_stones()
-            self._update_score()
+        self.grid.update_from_boss(self.boss)
+        self._update_next_stones()
+        self._update_score()        
 
     # gestori degli eventi
     def on_help(self, widget):
@@ -259,7 +270,16 @@ class Window(gui_base.FullWindow):
 
     # chiamate verso il "boss"
     def do_move(self, fc, tc):
+        #paths = self.boss.get_paths(fc, tc)
+        #v = self.boss._board.get_value(fc)
+
         self.boss.move(fc, tc)
+        #self.grid.animation_stone(paths[0], v) ## !!!!!! probema: griglia si aggiorna dopo chiamata ad evento
+        #self.grid.step_cell(fc, tc)
+        #self.grid.queue_draw_area(0, 0, 400, 400)
+        #self.queue_draw()
+        #gtk.gdk.Window.invalidate_rect(self)
+        #time.sleep(3)
         self.update_from_boss()
     
 def get_gui_for_boss(boss):

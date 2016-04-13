@@ -50,7 +50,7 @@ class Boss:
 		date = datetime.now().timetuple()[0:7]
 		scores.append("%d %d.%d.%d.%d.%d.%d.%d"%tuple([self.get_score()]+list(date)))
 		
-		common.write_file(scores)
+		common.write_file(file, scores)
 		return file
 
 	def load_score(self, file=None):
@@ -103,3 +103,6 @@ class Boss:
 	    
 	def is_there_free_cells(self):
 		return len(self._board.get_all_empty())>0
+
+	def get_paths(self, fc, tc):
+		return self._game.get_paths(fc, tc)

@@ -44,8 +44,11 @@ class Game:
         v = self.board.get_value(fc)
         self.board.set_value(fc, 0)
         self._fill_pos(tc, v)
+        if not self.are_groups_removed():
+        	self._add_random_stones()
+        	## da salvare???
+
         self._history.append( (UT_MOVE, fc, tc) ) # save move ut
-        self._add_random_stones()
         
     def _add_random_stones(self):
         vv = self._take_next_values()
@@ -57,7 +60,6 @@ class Game:
         # print "__add_random_stones: zip: %s", zip(cc,vv)
         ss = zip(cc,vv)
         self._stone_added = ss[:]
-        self._groups_removed = []
         for c,v in zip(cc,vv):
             self._fill_pos(c,v)
             self._history.append( (PC_MOVE, tuple(c), v) ) # save move pc
@@ -123,6 +125,9 @@ class Game:
     def get_raw_data(self):
         return self.board.get_raw_data()
 
+    def are_groups_removed(self):
+    	return len(self._groups_removed) > 0
+
     # private
     def _take_next_values(self):
         vv = self.get_next_values()
@@ -147,8 +152,10 @@ class Game:
 
     def _fill_pos(self, pos, value):
         """Assegna il valore VALUE alla posizione POS e rimouve gli
-        eventuali gruppi formatisi; aggiorna i punti"""
+        eventuali gruppi formatisi; aggiorna i punti"""        
+
         self.board.set_value(pos, value)
+        self._groups_removed = [] # tolgo gruppi rimossi precedentemente
         gg = self.grouper.groups_for_pos_in_board(pos, self.board)
         if not gg: return
         
@@ -156,7 +163,7 @@ class Game:
             for c in g:
                 # print "__fill_pos group:", g
                 self.board.set_value(c, 0)
-            self._history.append( (GROUP_DEL, tuple(g), value) ) # save groupe deleting
+            self._history.append( (GROUP_DEL, tuple(g), value) ) # save group deleting
 
         self._score += self._get_points_for_groups(gg)
         self._history.append( (SCORE_ADD, self._get_points_for_groups(gg)) ) # save score adding
