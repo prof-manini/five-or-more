@@ -43,12 +43,11 @@ class Game:
         self._check_can_move(fc, tc)
         v = self.board.get_value(fc)
         self.board.set_value(fc, 0)
+        self._history.append( (UT_MOVE, fc, tc) ) # save move ut
+
         self._fill_pos(tc, v)
         if not self.are_groups_removed():
         	self._add_random_stones()
-        	## da salvare???
-
-        self._history.append( (UT_MOVE, fc, tc) ) # save move ut
         
     def _add_random_stones(self):
         vv = self._take_next_values()
@@ -65,10 +64,6 @@ class Game:
             self._history.append( (PC_MOVE, tuple(c), v) ) # save move pc
 
     def undo(self): # next stones rimangono quelle prestabilite... non ripristinate
-    	length = len(self._history)
-    	if length == 0:
-    		return    	
-    	
     	mossa_utente_trovata = False
     	for mossa in self._history[::-1]:
     		if mossa[0] == UT_MOVE:
@@ -76,6 +71,8 @@ class Game:
     			break
     	if not mossa_utente_trovata:
     		return False
+
+    	length = len(self._history)
 
     	for i in range(length-1, 0, -1):
     		move = self._history[i]
@@ -94,6 +91,8 @@ class Game:
     			self._score -= move[1]
 
     		del self._history[i]
+
+    	self._update_next_values() ## genero casualmente, senza ripristinare quelle precedenti?
 
     # comoda nel debugging!
     def debug_add_random_stones(self):
