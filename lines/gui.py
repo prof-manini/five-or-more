@@ -271,7 +271,7 @@ class Window(gui_base.FullWindow):
     # chiamate verso il "boss"
     def do_move(self, fc, tc):
         #paths = self.boss.get_paths(fc, tc)
-        #v = self.boss._board.get_value(fc)
+        #v = self.boss._board.get_value(fc) 
 
         self.boss.move(fc, tc)
         #self.grid.animation_stone(paths[0], v) ## !!!!!! probema: griglia si aggiorna dopo chiamata ad evento
