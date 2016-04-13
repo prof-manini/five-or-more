@@ -1,6 +1,6 @@
 # -*- coding: iso-latin-1 -*-
 
-import os
+import os, crypt
 
 class LinesError(Exception): pass
 class FileError(Exception): pass ## added
@@ -81,7 +81,9 @@ def read_file(file):
 
 	ss = []
 	try:
-		ss = f.readlines()
+		ll = f.readlines()
+		for line in ll:
+			ss.append(crypt.decrypt(line))
 	except Exception as e:
 		raise FileError, "Error to read data from file '%s'."%file
 	finally:
@@ -95,17 +97,19 @@ def write_file(file, ss):
 		try:
 			os.mkdir(path)
 		except Exception as e:
-			raise common.FileError, "Error to create directory '%s'."%path
+			raise FileError, "Error to create directory '%s'."%path
 
 	try:
 		f = open(file, "w")
 	except Exception as e:
-		raise common.FileError, "Can't create file '%s'\n"%file
+		raise FileError, "Can't create file '%s'\n"%file
 
-	try:        	
-		f.writelines(ss)
+	try:
+		ll = [crypt.encrypt(s) for s in ss]
+		f.writelines(ll)
 	except Exception as e:
-		raise common.FileError, "Error to write data to file '%s'\n"%file
+		print e
+		raise FileError, "Error to write data to file '%s'\n"%file
 	finally:
 		f.close()
 
