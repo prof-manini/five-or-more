@@ -27,6 +27,7 @@ class Game:
         self._groups_removed = []
 
         self._history = []
+        self._story_point = 0 # segna la posizione rispetto history
 
         if not data:
         	self._update_next_values()
@@ -43,7 +44,11 @@ class Game:
         self._check_can_move(fc, tc)
         v = self.board.get_value(fc)
         self.board.set_value(fc, 0)
+
+        if self._story_point != len(self._history):
+        	self._history = self._history[:self._story_point]
         self._history.append( (UT_MOVE, fc, tc) ) # save move ut
+        self._story_point += 1
 
         self._fill_pos(tc, v)
         if not self.are_groups_removed():
@@ -62,25 +67,23 @@ class Game:
         for c,v in zip(cc,vv):
             self._fill_pos(c,v)
             self._history.append( (PC_MOVE, tuple(c), v) ) # save move pc
+            self._story_point += 1
 
-    def undo(self): # next stones rimangono quelle prestabilite... non ripristinate
+    def undo(self):
     	mossa_utente_trovata = False
-    	for mossa in self._history[::-1]:
+    	for mossa in self._history[self._story_point-1::-1]:
     		if mossa[0] == UT_MOVE:
     			mossa_utente_trovata = True
     			break
     	if not mossa_utente_trovata:
     		return False
 
-    	length = len(self._history)
-
-    	for i in range(length-1, 0, -1):
-    		move = self._history[i]
+    	for move in self._history[self._story_point-1::-1]:
     		if move[0] == UT_MOVE:
     			self.board.set_value(move[1], self.board.get_value(move[2]))
     			self.board.set_value(move[2], 0)
-    			del self._history[i]
-    			return True
+    			self._story_point -= 1
+    			break
 
     		elif move[0] == PC_MOVE:
     			self.board.set_value(move[1], 0)
@@ -90,9 +93,40 @@ class Game:
     		else: # score
     			self._score -= move[1]
 
-    		del self._history[i]
+    		self._story_point -= 1
+
+    	assert self._story_point > 0
 
     	self._update_next_values() ## genero casualmente, senza ripristinare quelle precedenti?
+    	return True
+
+    def redo(self):
+    	if len(self._history) == self._story_point:
+    		return False # sono già alla fine della storia di gioco
+
+    	assert self._history[self._story_point][0] == UT_MOVE
+
+    	mossa_ut_trovata = False
+    	for move in self._history[self._story_point:]:
+    		if move[0] == UT_MOVE:
+    			if mossa_ut_trovata:
+    				break
+    			mossa_ut_trovata = True
+    			self.board.set_value(move[2], self.board.get_value(move[1]))
+    			self.board.set_value(move[1], 0)    			
+
+    		elif move[0] == PC_MOVE:
+    			self.board.set_value(move[1], move[2])
+    		elif move[0] == GROUP_DEL:
+    			for c in move[1]:
+    				self.board.set_value(c, 0)
+    		else: # score
+    			self._score += move[1]
+
+    		self._story_point += 1
+
+    	self._update_next_values() ## genero casualmente, senza ripristinare quelle precedenti?    	
+    	return True
 
     # comoda nel debugging!
     def debug_add_random_stones(self):
@@ -163,9 +197,11 @@ class Game:
                 # print "__fill_pos group:", g
                 self.board.set_value(c, 0)
             self._history.append( (GROUP_DEL, tuple(g), value) ) # save group deleting
+            self._story_point += 1
 
         self._score += self._get_points_for_groups(gg)
         self._history.append( (SCORE_ADD, self._get_points_for_groups(gg)) ) # save score adding
+        self._story_point += 1
        	self._groups_removed.extend(gg)
         
     def _get_points_for_groups(self, gg):

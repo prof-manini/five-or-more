@@ -202,6 +202,7 @@ class Window(gui_base.FullWindow):
             ("_Save", self.on_save_game),
             ("_Records", self.on_records),
             ("Undo", self.on_undo),
+            ("Redo", self.on_redo),
             ("-", None),
             ("_Quit", self.destroy),
             ))
@@ -267,6 +268,13 @@ class Window(gui_base.FullWindow):
             self.update_from_boss()
         else:
             self.show_message("Can not undo.")
+
+    def on_redo(self, widget):
+        if self.boss.redo():
+            self.show_message("Redo...")
+            self.update_from_boss()
+        else:
+            self.show_message("Can not redo.")
 
     # chiamate verso il "boss"
     def do_move(self, fc, tc):

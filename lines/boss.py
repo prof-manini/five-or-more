@@ -77,6 +77,11 @@ class Boss:
 		self._board = self._game.get_board()
 		return result # result tell us if you can go undo or not
 
+	def redo(self):
+		result = self._game.redo()
+		self._board = self._game.get_board()
+		return result # result tell us if you can redo or not
+
 
 	# query
 	def get_size(self):
