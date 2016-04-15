@@ -112,7 +112,12 @@ class Game:
         self._groups_removed.extend(gg)
         
     def _get_points_for_groups(self, gg):
-        return sum(map(len, gg))
+        points = {5:10, 6:12, 7:18,8:28,9:42,10:82,11:108,12:138,13:172,14:210}
+        score =0
+        for g in gg:
+            assert len(g) < 15 && len(g) > 4
+            score+= points[len(g)]
+        return score
 
     def _update_next_values(self):
         self._next_values = common.random_values(self._NEXT_VALUES_COUNT, 0)
@@ -129,4 +134,3 @@ class Game:
 #         for c,v in cc:
 #             self._fill_pos(c,v)
 #         return cc
-
