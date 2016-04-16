@@ -33,8 +33,9 @@ class Game:
         	self._update_next_values()
         	self._add_random_stones()
         else:
-	    	history, next_values, matrix, score = data
+	    	story_point, history, next_values, matrix, score = data
 	    	self._score = score
+	    	self._story_point = story_point
 	    	self._history = history
 	    	self._next_values = next_values
 	    	self.board.load_data(matrix)    	
@@ -213,7 +214,7 @@ class Game:
         self._next_values = common.random_values(self._NEXT_VALUES_COUNT, 0)
     
     def get_data(self):
-    	return self._history, self._next_values, self.board.get_raw_data(), self._score
+    	return self._story_point, self._history, self._next_values, self.board.get_raw_data(), self._score
 
    #  def _restore_history(self):
    #  	for move in self._history:
