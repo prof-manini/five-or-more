@@ -1,6 +1,6 @@
 # -*- coding: iso-latin-1 -*-
 
-import os, crypt
+import os, crypt, game
 
 class LinesError(Exception): pass
 class FileError(Exception): pass ## added
@@ -22,43 +22,78 @@ def check_pos_in_size(pos, size):
             (pos, r-1, c-1)
         raise LinesError, s
 
-## changed exceptions raised
-def load_integers(file, size = None):
+def check_data(ss, size = 9):
+	try:
+		data = eval("\n".join(ss))
+		story_point, history, next_values, matrix, score = data		
+
+		for move in history:
+			if move[0] == game.UT_MOVE:
+				check_pos_in_size(move[1], size)
+				check_pos_in_size(move[2], size)
+				if move[1] == move[2]: raise Exception, "not a valid move"
+			elif move[0] == game.PC_MOVE:
+				check_pos_in_size(move[1], size)
+				if not (move[2] > 0 and move[2] <= MAX_VALUE and type(move[2]) == int):
+					raise Exception, "not a valid stone"
+			elif move[0] == game.GROUP_DEL:
+				if not (move[2] > 0 and move[2] <= MAX_VALUE and type(move[2]) == int):
+					raise Exception, "not a valid stone"
+				for c in move[1]:
+					check_pos_in_size(c, size)
+					for c2 in move[1]:
+						if c == c2: raise Exception, "2 cells equals in group deletion"
+			elif move[0] == game.SCORE_ADD:
+				if type(move[1]) == int or move[1] <= 0:
+					raise Exception, "bad score to add"
+			else:
+				raise Exception, "not a valid move."
+
+		if type(story_point) != int or story_point < 0 or story_point > len(history):
+			raise Exception, "bad story point"
+
+		for v in next_values:
+			if not (v > 0 and v <= MAX_VALUE) or type(v) != int:
+				raise Exception, "bad stone"
+
+		if score < 0 or type(score) != int:
+			raise Exception, "bad score"
+
+		check_grid(matrix, size)
+
+		return data
+	except Exception as e:
+	 	print(e)
+	 	return None
+
+def check_grid(rows, size):
     "Carica una matrice di dimensione SIZE e di interi tra zero e MAX_VALUE"
+
     try:
-    	file = open(file)
-    except:
-        raise FileError, "Unable to open '%s'."%file
-    try:
-        rows = [s.strip().split() for s in file]
         rc = len(rows)
         cc = len(rows[0])
         for r in rows:
-            if len(r) <> cc:
-                raise LinesError, "Le righe del file %s non sono tutte della stessa lunghezza" \
-                      % file
-        if size and (rc,cc) <> size:
-            raise LinesError, "I dati del file %s ha dimensione %s diversa da quella richiesta %s" \
-                  % (file, (rc,cc), size)
-        ss = []
+            if len(r) != cc:
+                raise LinesError, "Le righe non sono tutte della stessa lunghezza"
+        if size and (rc,cc) != size:
+            raise LinesError, "I dati hanno dimensione %s diversa da quella richiesta %s" \
+                  % ((rc,cc), size)
+
         for i, r in enumerate(rows):
-            try:
-                s = map(int, r)
-            except ValueError:
-                raise LinesError, "La riga %d del file %s non contiene solo numeri interi" \
-                      % (i + 1, file)
-            if min(s) < 0:
-                raise LinesError, "La riga %d del file %s contiene numeri negativi" \
-                      % (i + 1, file)
-            if max(s) > MAX_VALUE:
-                raise LinesError, "La riga %d del file %s contiene numeri maggiori di %d" \
-                      % (i + 1, file, MAX_VALUE)
-            ss.append(s)
-        return ss
+            if min(r) < 0:
+                raise LinesError, "La riga %d contiene numeri negativi" \
+                      % (i + 1)
+            if max(r) > MAX_VALUE:
+                raise LinesError, "La riga %d contiene numeri maggiori di %d" \
+                      % (i + 1, MAX_VALUE)
+
+            for c in r:
+            	if type(c) != int:
+            		raise Exception, "La riga %d contiene valori non interi"%i
+
     except Exception as e:
-    	raise FileError, "Not correct data in file: " + e.message
-    finally:
-    	file.close()
+    	print(e)
+    	raise FileError, "Not correct data: " + e.message
 
 def random_values(count, zeros):
     import random

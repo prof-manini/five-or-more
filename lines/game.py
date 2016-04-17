@@ -215,34 +215,3 @@ class Game:
     
     def get_data(self):
     	return self._story_point, self._history, self._next_values, self.board.get_raw_data(), self._score
-
-   #  def _restore_history(self):
-   #  	for move in self._history:
-			# if move[0] == UT_MOVE:
-   #  			self.board.set_value(move[1], self.board.get_value(move[2]))
-   #  			self.board.set_value(move[2], 0)
-   #  			del self._history[i]
-   #  			return
-
-   #  		else if move[0] == PC_MOVE:
-   #  			self.board.set_value(move[1], 0)
-   #  		else if move[0] == GROUP_DEL:
-   #  			for c in move[1]:
-   #  				self.board.set_value(c, move[2])
-   #  		else: # score
-   #  			self._score -= move[1]
-
-
-#     def add_some_random(self, count = 3):
-#         "Aggiunge COUNT pietre con valori random (non nulli)"
-#         pp = self.board.get_all_empty()
-#         if not pp:
-#             raise common.LinesError, "Non ci sono celle libere"
-#         pp = pp[:count]
-#         print pp
-#         vv = self.get_some_random_values(len(pp))
-#         cc = zip(pp,vv)
-#         for c,v in cc:
-#             self._fill_pos(c,v)
-#         return cc
-

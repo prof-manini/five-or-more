@@ -26,12 +26,14 @@ class Boss:
 
 	def load_game(self, file):
 		ss = common.read_file(file)
-		## controllare validità dati
 
-		if ss:
-			data = eval("\n".join(ss))
+		data = common.check_data(ss, size = self._board.get_size())
+		if data:
 			self._game  = game.Game(size = self.get_size(), data = data)
 			self._board = self._game.get_board()
+			return True
+		else:
+			return False
 
 	def save_game(self, file=None):
 	    if not file:

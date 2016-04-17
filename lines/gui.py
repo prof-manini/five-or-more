@@ -180,10 +180,8 @@ class Window(gui_base.FullWindow):
 						self.do_move(old, new)
 						self.selected_pos = None
 
-						## aggiunto controllo che il gioco non sia finito
 						if not self.boss.is_there_free_cells():
 							self.show_message("Game Over! Score: %d... saved!"%self.boss.get_score())
-							## da fare salvataggio punteggio
 							self.boss.save_score()
 					else:
 						self.show_message("NO path from %s to %s" % 
@@ -198,7 +196,7 @@ class Window(gui_base.FullWindow):
         
         make("_Game", (
             ("_New",  self.on_new_game),
-            ("_Open", self.on_load_game),
+            ("_Load", self.on_load_game),
             ("_Save", self.on_save_game),
             ("_Records", self.on_records),
             ("Undo", self.on_undo),
@@ -240,17 +238,18 @@ class Window(gui_base.FullWindow):
         self.show_message("New Game.")
         
     def on_load_game(self, widget):
-        s = utils.choose_file_for_open()
-        if s: self.show_message("Loading from: %s" % s)
-        self.boss.load_game(s)
-        self.update_from_boss()
+        file = utils.choose_file_for_open()
+        if file: self.show_message("Loading from: %s" % file)
+        if self.boss.load_game(file):
+        	self.update_from_boss()
+        else:
+        	self.show_message("File '%s' corrupted. Chose another file."%file)
         
     def on_save_game(self, widget):
         #s = utils.choose_file_for_save()
-        #if s: self.show_message("Saving to: %s" % s)
-        file = None
-        self.show_message("Saving...")
-        self.boss.save_game(file)
+        #if s: self.show_message("Saving to: %s" % s)        
+        file = self.boss.save_game()
+        self.show_message("Saving to: %s"%file)
 
     def on_records(self, widget):
     	records = self.boss.load_records()
