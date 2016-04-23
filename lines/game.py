@@ -10,6 +10,7 @@ UT_MOVE = 2
 GROUP_DEL = 3
 SCORE_ADD = 4
 NEXT_STONES = 5
+RANDOM_STATE = 6
 
 class Game:
 
@@ -81,20 +82,21 @@ class Game:
     		return False
 
         for move in self._history[self._story_point-1::-1]:
-            if move[0] == UT_MOVE:
+            id_mossa = move[0]
+            if id_mossa == UT_MOVE:
                 self.board.set_value(move[1], self.board.get_value(move[2]))
                 self.board.set_value(move[2], 0)
                 self._story_point -= 1
                 break
 
-            elif move[0] == PC_MOVE:
+            elif id_mossa == PC_MOVE:
                 self.board.set_value(move[1], 0)
-            elif move[0] == GROUP_DEL:
+            elif id_mossa == GROUP_DEL:
                 for c in move[1]:
                     self.board.set_value(c, move[2])
-            elif move[0] == SCORE_ADD:
+            elif id_mossa == SCORE_ADD:
                 self._score -= move[1]
-            elif move[0] == NEXT_STONES:
+            elif id_mossa == NEXT_STONES or id_mossa == RANDOM_STATE:
                 pass
             else:
                 raise Exception, "bad history"
@@ -103,10 +105,13 @@ class Game:
 
     	#self._update_next_values() ## genero casualmente, senza ripristinare quelle precedenti?
         for move in self._history[self._story_point-1::-1]:
-            if move[0] == NEXT_STONES:
+            id_mossa = move[0]
+            if id_mossa == NEXT_STONES:
                 self._next_values = move[1]
+            if id_mossa == RANDOM_STATE:
+                common.set_random_state(move[1])
                 break
-                ## gestire retrocedere generatore random
+            
     	return True
 
     def redo(self):
@@ -117,22 +122,25 @@ class Game:
 
     	mossa_ut_trovata = False
     	for move in self._history[self._story_point:]:
-            if move[0] == UT_MOVE:
+            id_mossa = move[0]
+            if id_mossa == UT_MOVE:
                 if mossa_ut_trovata:
                     break
                 mossa_ut_trovata = True
                 self.board.set_value(move[2], self.board.get_value(move[1]))
                 self.board.set_value(move[1], 0)    			
 
-            elif move[0] == PC_MOVE:
+            elif id_mossa == PC_MOVE:
                 self.board.set_value(move[1], move[2])
-            elif move[0] == GROUP_DEL:
+            elif id_mossa == GROUP_DEL:
                 for c in move[1]:
                     self.board.set_value(c, 0)
-            elif move[0] == SCORE_ADD:
+            elif id_mossa == SCORE_ADD:
                 self._score += move[1]
-            elif move[0] == NEXT_STONES:
+            elif id_mossa == NEXT_STONES:
                 self._next_values = move[1]
+            elif id_mossa == RANDOM_STATE:
+                common.random_values(self._NEXT_VALUES_COUNT, 0) # rigenero next_values per portare avanti il generatore random
             else:
                 raise Exception, "bad history"
 
@@ -223,9 +231,10 @@ class Game:
         return sum([l**(len(gg)+1) for l in map(len, gg)])
 
     def _update_next_values(self):
-        self._next_values = common.random_values(self._NEXT_VALUES_COUNT, 0)
+        self._next_values, oldstate = common.random_values(self._NEXT_VALUES_COUNT, 0)
+        self._history.append( (RANDOM_STATE, oldstate) )
         self._history.append( (NEXT_STONES, tuple(self._next_values)) )
-        self._story_point += 1
+        self._story_point += 2
     
     def get_data(self):
     	return self._story_point, self._history, self._next_values, self.board.get_raw_data(), self._score

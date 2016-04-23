@@ -1,6 +1,6 @@
 # -*- coding: iso-latin-1 -*-
 
-import os, crypt, game
+import os, crypt, game, random
 
 class LinesError(Exception): pass
 class FileError(Exception): pass ## added
@@ -54,6 +54,8 @@ def check_data(ss, size = 9):
 				for stone in move[1]:
 					if not (stone > 0 and stone <= MAX_VALUE and type(stone) == int):
 						raise Exception, "not a valid stone"
+			elif move[0] == game.RANDOM_STATE:
+				pass ## controlli per il seed random?
 			else:
 				raise Exception, "not a valid move."
 
@@ -107,13 +109,16 @@ def check_scores(ss):
 	pass
 
 def random_values(count, zeros):
-    import random
-    "Una lista di COUNT numeri random tra 0 e 8 di cui ZEROS nulli"   
+    "Una lista di COUNT numeri random tra 0 e 8 di cui ZEROS nulli"
+    oldstate = random.getstate()
+
     ii = [random.choice(range(1,8)) for i in range(count-zeros)]
     ii.extend([0] * zeros)
     random.shuffle(ii)
-    return ii
-    
+    return ii, oldstate
+
+def set_random_state(oldstate):
+	random.setstate(oldstate)    
 
 def read_file(file):
 	if not (os.path.exists(file) and os.path.isfile(file)):
