@@ -44,8 +44,16 @@ def check_data(ss, size = 9):
 					for c2 in move[1]:
 						if c == c2: raise Exception, "2 cells equals in group deletion"
 			elif move[0] == game.SCORE_ADD:
-				if type(move[1]) == int or move[1] <= 0:
+				if type(move[1]) != int or move[1] <= 0:
 					raise Exception, "bad score to add"
+			elif move[0] == game.NEXT_STONES:
+				if type(move[1]) != tuple:
+					raise Exception, "bad stones generated"
+				if len(move[1]) != 3:
+					raise Exception, "bad stones generated"
+				for stone in move[1]:
+					if not (stone > 0 and stone <= MAX_VALUE and type(stone) == int):
+						raise Exception, "not a valid stone"
 			else:
 				raise Exception, "not a valid move."
 
