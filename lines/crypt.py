@@ -1,6 +1,6 @@
 from Crypto.Cipher import DES
 
-KEY = "key_test"
+KEY = "key_test" # key must be 8 chars (8 bytes)
 des = DES.new(KEY, DES.MODE_ECB)
 
 def encrypt(text, key=KEY):

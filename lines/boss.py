@@ -2,8 +2,8 @@
 import game
 from datetime import datetime
 import common
+from common import SAVE_DIR, SETTINGS_DIR
 
-HOME_DIR = common.get_home_dir()+"/" ## forse sotto windows non funziona?
 
 class Boss:
 
@@ -14,7 +14,8 @@ class Boss:
 	direttamente da Boss."""
 
 	def __init__(self):
-	    self.new_empty_game()
+		common.init_game_dir()
+		self.new_empty_game()
 
 	# command
 	def new_empty_game(self, size = (9,9)):
@@ -27,7 +28,7 @@ class Boss:
 	def load_game(self, file):
 		ss = common.read_file(file)
 
-		data = common.check_data(ss, size = self._board.get_size())
+		data = common.check_data(ss, size = self.get_size())
 		if data:
 			self._game  = game.Game(size = self.get_size(), data = data)
 			self._board = self._game.get_board()
@@ -38,14 +39,14 @@ class Boss:
 	def save_game(self, file=None):
 	    if not file:
 	    	date = datetime.now().timetuple()[0:7]
-	    	file = HOME_DIR+".saves/data%d.%d.%d.%d.%d.%d.%d"%date
+	    	file = SAVE_DIR+"data%d.%d.%d.%d.%d.%d.%d"%date
 
 	    common.write_file(file, repr(self._game.get_data()))
 	    return file
 
 	def save_score(self, file=None):
 		if not file:
-			file = HOME_DIR+".saves/scores"
+			file = SAVE_DIR+"scores"
 
 		scores = common.read_file(file)
 
@@ -57,27 +58,28 @@ class Boss:
 
 	def load_score(self, file=None):
 		if not file:
-			file = HOME_DIR+".saves/scores"
+			file = SAVE_DIR+"scores"
 		
 		ss = common.read_file(file)
+		scores = dict()
 
-		scores = []
-		for line in ss:
-			## controllare dati
-			points, date = line.strip().split()
-			scores.append(int(points))
+		if common.check_scores(ss):
+			for line in ss:
+				points, date = line.strip().split()
+				scores[date] = int(points)
 
 		return scores
 
 	def load_records(self, file=None):
 		scores = self.load_score(file)
-		scores.sort(reverse=True)
-		return scores
+		records = scores.values()
+		records.sort(reverse=True)
+		return records
 
 	def undo(self):
 		result = self._game.undo()
 		self._board = self._game.get_board()
-		return result # result tell us if you can go undo or not
+		return result # result tell us if you can undo or not
 
 	def redo(self):
 		result = self._game.redo()
@@ -106,7 +108,7 @@ class Boss:
 	        yield rcv
 
 	def get_raw_data(self):
-	    return self._board.get_raw_data() # restituisce la matrice dei colori delle celle
+	    return self._board.get_raw_data()
 	    
 	def is_there_free_cells(self):
 		return len(self._board.get_all_empty())>0

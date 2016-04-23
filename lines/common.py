@@ -95,6 +95,9 @@ def check_grid(rows, size):
     	print(e)
     	raise FileError, "Not correct data: " + e.message
 
+def check_scores(ss):
+	pass
+
 def random_values(count, zeros):
     import random
     "Una lista di COUNT numeri random tra 0 e 8 di cui ZEROS nulli"   
@@ -150,6 +153,32 @@ def write_file(file, ss):
 
 def get_home_dir():
 	try:
-		return os.path.expanduser("~")
+		return os.path.expanduser("~") ## forse sotto windows non funziona?
 	except:
 		return ""
+
+
+HOME_DIR = get_home_dir()+"/"
+GAME_DIR = HOME_DIR+".five/"
+SAVE_DIR = GAME_DIR+"saves/"
+SETTINGS_DIR = GAME_DIR+"settings/"
+
+
+def init_game_dir():	
+	if not (os.path.exists(GAME_DIR) and os.path.isdir(GAME_DIR)):
+		try:
+			os.mkdir(GAME_DIR)
+		except Exception as e:
+			raise FileError, "Error to create directory '%s'."%GAME_DIR
+
+	if not (os.path.exists(SAVE_DIR) and os.path.isdir(SAVE_DIR)):
+		try:
+			os.mkdir(SAVE_DIR)
+		except Exception as e:
+			raise FileError, "Error to create directory '%s'."%SAVE_DIR
+
+	if not (os.path.exists(SETTINGS_DIR) and os.path.isdir(SETTINGS_DIR)):
+		try:
+			os.mkdir(SETTINGS_DIR)
+		except Exception as e:
+			raise FileError, "Error to create directory '%s'."%SETTINGS_DIR

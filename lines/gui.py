@@ -238,18 +238,25 @@ class Window(gui_base.FullWindow):
         self.show_message("New Game.")
         
     def on_load_game(self, widget):
-        file = utils.choose_file_for_open()
-        if file: self.show_message("Loading from: %s" % file)
+        file = utils.choose_file_for_open(dir=common.SAVE_DIR)
+        if not file:
+            self.show_message("Loading aborted.")
+            return
+
+        self.show_message("Loading from: %s" % file)
         if self.boss.load_game(file):
         	self.update_from_boss()
         else:
-        	self.show_message("File '%s' corrupted. Chose another file."%file)
+        	self.show_message("Bad file '%s'. Chose another file."%file)
         
     def on_save_game(self, widget):
-        #s = utils.choose_file_for_save()
-        #if s: self.show_message("Saving to: %s" % s)        
-        file = self.boss.save_game()
-        self.show_message("Saving to: %s"%file)
+        file = utils.choose_file_for_save(dir=common.SAVE_DIR)
+        if not file:
+            self.show_message("Saving aborted.")
+            return
+
+        self.show_message("Saving to: %s" % file)
+        self.boss.save_game(file)
 
     def on_records(self, widget):
     	records = self.boss.load_records()
@@ -257,7 +264,7 @@ class Window(gui_base.FullWindow):
     	for i, r in enumerate(records):
     		s += "%d) %d "%(i+1,r)
     	if s:
-    		self.show_message(s)
+    		self.show_message(s.strip())
     	else:
     		self.show_message("Nessun record.")
 
@@ -289,6 +296,6 @@ class Window(gui_base.FullWindow):
         #time.sleep(3)
         self.update_from_boss()
     
-def get_gui_for_boss(boss):
+def get_gui_for_boss(boss):    
     return Window(boss)
 

@@ -1,6 +1,7 @@
 # import pygtk
 # pygtk.require('2.0')
 import gtk
+import common
 
 class FileOpener:
 
@@ -13,8 +14,9 @@ class FileOpener:
                        gtk.RESPONSE_CANCEL,
                        gtk.STOCK_OPEN,
                        gtk.RESPONSE_OK))
+        
         if dir:
-            d.set_current_folder(dir)
+        	d.set_current_folder(dir)
         if file:
             d.set_current_name(file)    # FULL PATH required
         self.dial = d
@@ -52,18 +54,19 @@ class FileSaver:
             self.filename = ""
         self.dial.destroy()        
 
-def choose_file_for_open(dir = "", file = "", title = ""):
+def choose_file_for_open(dir = "", file = "", title = "Load file..."):
     d = FileOpener(dir, file, title)
     d.show()
     return d.filename
 
-def choose_file_for_save(dir = "", file = "", title = ""):
+def choose_file_for_save(dir = "", file = "", title = "Save file..."):
     d = FileSaver(dir, file, title)
     d.show()
     return d.filename
 
-if __name__ == "__main__":
 
+
+if __name__ == "__main__":
     # s = choose_file_for_open(dir = "/tmp", title = "Hi Luke")
     s = choose_file_for_save(dir = "/tmp", title = "Hi Luke")
     print "Selection:", s or "<no file selected>"
