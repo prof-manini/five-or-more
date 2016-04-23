@@ -35,12 +35,19 @@ class Game:
         	self._update_next_values()
         	self._add_random_stones()
         else:
-	    	story_point, history, next_values, matrix, score = data
-	    	self._score = score
-	    	self._story_point = story_point
-	    	self._history = history
-	    	self._next_values = next_values
-	    	self.board.load_data(matrix)    	
+            story_point, history, next_values, matrix, score = data
+            self._score = score
+            self._story_point = story_point
+            self._history = history
+            self._next_values = next_values
+
+            for move in self._history[self._story_point-1::-1]:
+                if move[0] == RANDOM_STATE:
+                    common.set_random_state(move[1]) # ripristino generatore random precedente
+                    break
+            common.random_values() # incremento generatore
+
+            self.board.load_data(matrix)    	
 
     # commands
     def move(self, fc, tc):

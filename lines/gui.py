@@ -138,6 +138,12 @@ class Window(gui_base.FullWindow):
         # mostra la situazione iniziale del gioco
         self.update_from_boss()
 
+        # controllo che non ci siano state sessioni di gioco interrotte
+        tmp_file = self.boss.get_tmp_data()
+        if tmp_file:
+            ## chiedere all'utente se vuole ripristinare la precedente sessione di gioco
+            print("Last session has been interrupted!")
+
     def _make_next_stones(self):
         h  = gtk.HBox(gtk.FALSE, 3)
         bb = []
@@ -202,7 +208,7 @@ class Window(gui_base.FullWindow):
             ("Undo", self.on_undo),
             ("Redo", self.on_redo),
             ("-", None),
-            ("_Quit", self.destroy),
+            ("_Quit", self.quit),
             ))
         
         make("_Help", (
@@ -282,7 +288,6 @@ class Window(gui_base.FullWindow):
         else:
             self.show_message("Can not redo.")
 
-    # chiamate verso il "boss"
     def do_move(self, fc, tc):
         #paths = self.boss.get_paths(fc, tc)
         #v = self.boss._board.get_value(fc) 
@@ -295,6 +300,10 @@ class Window(gui_base.FullWindow):
         #gtk.gdk.Window.invalidate_rect(self)
         #time.sleep(3)
         self.update_from_boss()
+
+    def quit(self, widget):
+        self.boss.finalize_game()
+        gtk.main_quit()
     
 def get_gui_for_boss(boss):    
     return Window(boss)

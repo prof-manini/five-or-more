@@ -1,6 +1,7 @@
 # -*- coding: iso-latin-1 -*-
 
 import os, crypt, game, random
+from subprocess import call
 
 class LinesError(Exception): pass
 class FileError(Exception): pass ## added
@@ -24,7 +25,7 @@ def check_pos_in_size(pos, size):
 
 def check_data(ss, size = 9):
 	try:
-		data = eval("\n".join(ss))
+		data = eval('/n'.join(ss))		
 		story_point, history, next_values, matrix, score = data		
 
 		for move in history:
@@ -118,7 +119,8 @@ def random_values(count, zeros):
     return ii, oldstate
 
 def set_random_state(oldstate):
-	random.setstate(oldstate)    
+	random.setstate(oldstate)   
+
 
 def read_file(file):
 	if not (os.path.exists(file) and os.path.isfile(file)):
@@ -174,6 +176,7 @@ def get_home_dir():
 HOME_DIR = get_home_dir()+"/"
 GAME_DIR = HOME_DIR+".five/"
 SAVE_DIR = GAME_DIR+"saves/"
+TMP_DIR = SAVE_DIR+".tmp/"
 SETTINGS_DIR = GAME_DIR+"settings/"
 
 
@@ -195,3 +198,26 @@ def init_game_dir():
 			os.mkdir(SETTINGS_DIR)
 		except Exception as e:
 			raise FileError, "Error to create directory '%s'."%SETTINGS_DIR
+
+	if not (os.path.exists(TMP_DIR) and os.path.isdir(TMP_DIR)):
+		try:
+			os.mkdir(TMP_DIR)
+		except Exception as e:
+			raise FileError, "Error to create directory '%s'."%TMP_DIR
+
+def delete_tmp():
+	if (os.path.exists(TMP_DIR) and os.path.isdir(TMP_DIR)):
+		ff = os.listdir(TMP_DIR)
+		for f in ff:
+			if os.path.isfile(TMP_DIR+f):
+				os.remove(TMP_DIR+f)
+
+def get_tmp():
+	if (os.path.exists(TMP_DIR) and os.path.isdir(TMP_DIR)):
+		ff = os.listdir(TMP_DIR)
+		for f in ff:
+			if os.path.isfile(TMP_DIR+f):
+				return read_file(TMP_DIR+f)
+	return None
+
+		

@@ -2,7 +2,7 @@
 import game
 from datetime import datetime
 import common
-from common import SAVE_DIR, SETTINGS_DIR
+from common import SAVE_DIR, SETTINGS_DIR, TMP_DIR
 
 
 class Boss:
@@ -14,23 +14,26 @@ class Boss:
 	direttamente da Boss."""
 
 	def __init__(self):
-		common.init_game_dir()
+		common.init_game_dir()		
 		self.new_empty_game()
+
+		#self._count_tmp = 0
 
 	# command
 	def new_empty_game(self, size = (9,9)):
-	    self._game  = game.Game(size = size)
-	    self._board = self._game.get_board()
+		self._game  = game.Game(size = size)
+		self._board = self._game.get_board()
 
 	def move(self, fc, tc):
 	    self._game.move(fc, tc)
+	    self.save_tmp()
 
 	def load_game(self, file):
 		ss = common.read_file(file)
 
-		data = common.check_data(ss, size = self.get_size())
+		data = common.check_data(ss, size = (9,9))
 		if data:
-			self._game  = game.Game(size = self.get_size(), data = data)
+			self._game  = game.Game(size = (9,9), data = data)
 			self._board = self._game.get_board()
 			return True
 		else:
@@ -43,6 +46,38 @@ class Boss:
 
 	    common.write_file(file, repr(self._game.get_data()))
 	    return file
+
+	def save_tmp(self):
+		common.delete_tmp()
+		date = datetime.now().timetuple()[0:7]
+		file = TMP_DIR+"tmp%d.%d.%d.%d.%d.%d.%d"%date
+		_,__, next_values, grid, score = self._game.get_data() # salvo solo situazione finale, altrimenti troppi dati
+		common.write_file(file, repr([next_values, grid, score]))
+
+	def get_tmp_data(self):
+		data_tmp = common.get_tmp()
+		if not data_tmp:
+			return None
+
+		data = "[0,[],%s"%data_tmp[0][1:]
+		data = common.check_data([data], size = (9,9)) # aggiungo dati fittizzi a quelli parziali
+		if data:
+			return data
+		else:
+			common.delete_tmp()
+			return None
+
+	def load_tmp(self):
+		data = get_tmp_data()
+		if data:
+			self._game  = game.Game(size = (9,9), data = data)
+			self._board = self._game.get_board()
+			return True
+		else:
+			return False
+
+	def finalize_game(self):
+		common.delete_tmp()
 
 	def save_score(self, file=None):
 		if not file:
@@ -60,7 +95,7 @@ class Boss:
 		if not file:
 			file = SAVE_DIR+"scores"
 		
-		ss = common.read_file(file)
+		ss = common.read_file(file)#.split("\n")
 		scores = dict()
 
 		if common.check_scores(ss):
