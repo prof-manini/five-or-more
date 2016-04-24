@@ -16,7 +16,6 @@ images = [ "empty.png", "blue.png", "light-blue.png", "purple.png",
 
 def get_image(value):
     path = os.path.join(image_dir, images[value])
-    print path
     return path
 
 class StoneCell(gtk.Button):
@@ -31,9 +30,8 @@ class StoneCell(gtk.Button):
         self.add(self.image)
 
     def set_value(self, value):
-        print value
         self.image.set_from_file(get_image(value))
-    
+
 class ButtonCell(gtk.Button):
 
     "Il widget per le pedine sulla scacchiera"
@@ -52,21 +50,21 @@ class ButtonCell(gtk.Button):
 
     def get_pos(self):
         return self.pos
-    
+
     def set_value(self, value):
         self.value = value
         self.image.set_from_file(get_image(value))
 
     def __str__(self):
         return str(self.pos())
-    
+
 Cell = ButtonCell
 
 class Grid(gtk.Table):
     "La griglia che fa da GUI per la scacchiera"
 
     def __init__(self, size, back):
-        "Griglia di dimensione SIZE, BACK è il gestore dei click delle celle"
+        "Griglia di dimensione SIZE, BACK ï¿½ il gestore dei click delle celle"
         self.size = size
         r,c = size
         gtk.Table.__init__(self, r, c, gtk.TRUE)
@@ -82,7 +80,7 @@ class Grid(gtk.Table):
     def size(self):
         "Le dimensioni della scacchiera"
         return self.cells.size()
-    
+
     def update_from_boss(self, boss):
         "Aggiorna la scacchiera con i dati della BOARD"
         cell = self.cells.get_value
@@ -112,7 +110,7 @@ class Window(gui_base.FullWindow):
         self.selected_pos = None
 
         # mostra la situazione iniziale del gioco
-        self.update_from_boss() 
+        self.update_from_boss()
 
     def _make_next_stones(self):
         h  = gtk.HBox(gtk.FALSE, 3)
@@ -125,7 +123,7 @@ class Window(gui_base.FullWindow):
         self._score_label = gtk.Label()
         h.pack_start(self._score_label, gtk.FALSE, gtk.FALSE, 0)
         return h
-            
+
     def _make_content(self):
         self.grid = Grid(self.size, self.on_cell_clicked)
         b = self._make_next_stones()
@@ -171,11 +169,11 @@ class Window(gui_base.FullWindow):
                 else:
                     self.show_message("Cell at %s selected" % str(new))
                     self.selected_pos = new
-        
+
     def _make_menus(self):
 
         make = self.menu_bar.easy_make_menu
-        
+
         make("_Game", (
             ("_New",  self.on_new_game),
             ("_Open", self.on_load_game),
@@ -183,7 +181,7 @@ class Window(gui_base.FullWindow):
             ("-", None),
             ("_Quit", self.destroy),
             ))
-        
+
         make("_Help", (
             ("_Content", self.on_help),
             ("_About", self.on_about),
@@ -198,7 +196,7 @@ class Window(gui_base.FullWindow):
     def _update_score(self):
         s = self.boss.get_score()
         self._score_label.set_text("Punteggio: %3d" % s)
-        
+
     def update_from_boss(self):
             self.grid.update_from_boss(self.boss)
             self._update_next_stones()
@@ -214,23 +212,24 @@ class Window(gui_base.FullWindow):
     def on_new_game(self, widget):
         self.boss.new_empty_game(self.size)
         self.update_from_boss()
-        
+
     def on_load_game(self, widget):
         s = utils.choose_file_for_open()
         if s: self.show_message("Loading from: %s" % s)
         self.boss.load_game(s)
         self.update_from_boss()
-        
+
     def on_save_game(self, widget):
         s = utils.choose_file_for_save()
-        if s: self.show_message("Saving to: %s" % s)
-        self.boss.save_game(s)
+        if s:
+            self.show_message("Saving to: %s" % s)
+            self.boss.save_to_file(s)
+            self.show_message("Game saved")
 
     # chiamate verso il "boss"
     def do_move(self, fc, tc):
         self.boss.move(fc, tc)
         self.update_from_boss()
-    
+
 def get_gui_for_boss(boss):
     return Window(boss)
-

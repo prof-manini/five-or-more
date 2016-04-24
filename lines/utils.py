@@ -1,6 +1,8 @@
 # import pygtk
 # pygtk.require('2.0')
-import gtk
+import gtk, os.path
+
+LAST_SAVE_FILE="data/.last_save_path.txt"
 
 class FileOpener:
 
@@ -18,14 +20,14 @@ class FileOpener:
         if file:
             d.set_current_name(file)    # FULL PATH required
         self.dial = d
-        
+
     def show(self):
-        r = self.dial.run()       
+        r = self.dial.run()
         if r == gtk.RESPONSE_OK:
             self.filename = self. dial.get_filename()
         else:
             self.filename = ""
-        self.dial.destroy()        
+        self.dial.destroy()
 
 class FileSaver:
 
@@ -43,14 +45,15 @@ class FileSaver:
         if file:
             d.set_current_name(file)    # FULL PATH required
         self.dial = d
-        
+
     def show(self):
-        r = self.dial.run()       
+        r = self.dial.run()
         if r == gtk.RESPONSE_OK:
             self.filename = self. dial.get_filename()
+            set_last_save_path(os.path.dirname(self.filename))
         else:
             self.filename = ""
-        self.dial.destroy()        
+        self.dial.destroy()
 
 def choose_file_for_open(dir = "", file = "", title = ""):
     d = FileOpener(dir, file, title)
@@ -58,9 +61,21 @@ def choose_file_for_open(dir = "", file = "", title = ""):
     return d.filename
 
 def choose_file_for_save(dir = "", file = "", title = ""):
+    if not dir:
+        dir=get_last_save_path()
     d = FileSaver(dir, file, title)
     d.show()
     return d.filename
+
+def get_last_save_path():
+    with open (LAST_SAVE_FILE) as f:
+        path=f.next() # the path is in the first line of the file
+    return path
+
+
+def set_last_save_path(dir):
+    with open (LAST_SAVE_FILE, 'w') as f:
+        f.write(dir)
 
 if __name__ == "__main__":
 

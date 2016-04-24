@@ -29,7 +29,7 @@ class Game:
         self.board.set_value(fc, 0)
         self._fill_pos(tc, v)
         self._add_random_stones()
-        
+
     def _add_random_stones(self):
         vv = self._take_next_values()
         cc = self.board.get_all_empty()[:len(vv)]
@@ -47,7 +47,7 @@ class Game:
     # comoda nel debugging!
     def debug_add_random_stones(self):
         self._add_random_stones()
-        
+
     # queries
     def get_size(self):
         return self.size
@@ -61,7 +61,7 @@ class Game:
 
     def get_board(self):
         return self.board
-    
+
     def get_next_values(self):
         return self._next_values
 
@@ -85,13 +85,13 @@ class Game:
         if self.board.is_free(fc):
             fe = "la cella %s non contiene una pedina" % str(fc)
         if not self.board.is_free(tc):
-            te = "la cella %s non è libera" % str(tc)
+            te = "la cella %s non ï¿½ libera" % str(tc)
         if len(self.get_paths(fc, tc)) == 0:
             pe = "non esiste un percorso da %s a %s" % (str(fc), str(tc))
         if fe or te or pe:
             ee = ", ".join( (fe, te, pe) ) + '.'
             raise common.LinesError, ee
-        
+
     def get_some_random_values(self, count):
         "COUNT interi positivi non nulli"
         return common.random_values(count, 0)
@@ -102,7 +102,7 @@ class Game:
         self.board.set_value(pos, value)
         gg = self.grouper.groups_for_pos_in_board(pos, self.board)
         if not gg: return
-        
+
         for g in gg:
             for c in g:
                 # print "__fill_pos group:", g
@@ -110,13 +110,13 @@ class Game:
 
         self._score += self._get_points_for_groups(gg)
         self._groups_removed.extend(gg)
-        
+
     def _get_points_for_groups(self, gg):
         return sum(map(len, gg))
 
     def _update_next_values(self):
         self._next_values = common.random_values(self._NEXT_VALUES_COUNT, 0)
-    
+
 #     def add_some_random(self, count = 3):
 #         "Aggiunge COUNT pietre con valori random (non nulli)"
 #         pp = self.board.get_all_empty()
@@ -129,4 +129,3 @@ class Game:
 #         for c,v in cc:
 #             self._fill_pos(c,v)
 #         return cc
-

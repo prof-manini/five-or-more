@@ -16,13 +16,10 @@ def get_cross(pos, size):
 
 class Walker:
     """Trova i cammmini liberi tra due posizioni di una Board
-
     Walker sa trovare i percorsi liberi da una posizione a un'altra.
     Walker ha un unico metodo pubblico (get_paths).
-
     Un client di solito avrà un walker e una board e ad ogni richiesta
     di percorso libero chiamerà:
-
        walker.get_paths(board, from_pos, to_pos). """
 
     # naming:
