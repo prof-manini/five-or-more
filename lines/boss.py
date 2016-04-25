@@ -29,7 +29,7 @@ class Boss:
         data = self._game.get_raw_data()
         next_values= self._game.get_next_values()
         score=self._game.get_score()
-        string="data:\n%s\nnext:\n%s\npoints:\n%s"%(data, next_values, score)
+        string=repr([data, next_values, score])
         with open(file, 'w') as f:
             f.write(string)
 
