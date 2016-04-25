@@ -1,8 +1,8 @@
 # import pygtk
 # pygtk.require('2.0')
-import gtk, os.path
+import gtk, os
 
-LAST_SAVE_FILE="data/.last_save_path.txt"
+LAST_SAVE_FILE="./data/.last_save_path.txt"
 
 class FileOpener:
 
@@ -68,12 +68,18 @@ def choose_file_for_save(dir = "", file = "", title = ""):
     return d.filename
 
 def get_last_save_path():
-    with open (LAST_SAVE_FILE) as f:
-        path=f.next() # the path is in the first line of the file
+    try:
+        with open (LAST_SAVE_FILE) as f:
+            path=f.next() # the path is in the first line of the file
+    except IOError:
+        path='.' # if the file doesn't exist return working directory
     return path
 
 
 def set_last_save_path(dir):
+    directory=os.path.dirname(LAST_SAVE_FILE)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
     with open (LAST_SAVE_FILE, 'w') as f:
         f.write(dir)
 
