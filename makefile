@@ -7,6 +7,7 @@ cleaner: clean
 	rm -rf html
 	rm -f TAGS
 	rm -rf README.pdf
+	rm data/* # delete saved games in data/
 	(cd lines; make cleaner)
 
 check:
@@ -25,4 +26,3 @@ tgz:
 
 README.pdf: README.txt
 	rst2pdf.sh $<
-
