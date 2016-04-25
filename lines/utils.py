@@ -2,7 +2,7 @@
 # pygtk.require('2.0')
 import gtk, os
 
-LAST_SAVE_FILE="./data/.last_save_path.txt"
+LAST_PATH_FILE="./data/.last_path.txt"
 
 class FileOpener:
 
@@ -50,7 +50,7 @@ class FileSaver:
         r = self.dial.run()
         if r == gtk.RESPONSE_OK:
             self.filename = self. dial.get_filename()
-            set_last_save_path(os.path.dirname(self.filename))
+            set_last_path(os.path.dirname(self.filename))
         else:
             self.filename = ""
         self.dial.destroy()
@@ -62,25 +62,25 @@ def choose_file_for_open(dir = "", file = "", title = ""):
 
 def choose_file_for_save(dir = "", file = "", title = ""):
     if not dir:
-        dir=get_last_save_path()
+        dir=get_last_path()
     d = FileSaver(dir, file, title)
     d.show()
     return d.filename
 
-def get_last_save_path():
+def get_last_path():
     try:
-        with open (LAST_SAVE_FILE) as f:
+        with open (LAST_PATH_FILE) as f:
             path=f.next() # the path is in the first line of the file
     except IOError:
         path='.' # if the file doesn't exist return working directory
     return path
 
 
-def set_last_save_path(dir):
-    directory=os.path.dirname(LAST_SAVE_FILE)
+def set_last_path(dir):
+    directory=os.path.dirname(LAST_PATH_FILE)
     if not os.path.exists(directory):
         os.makedirs(directory)
-    with open (LAST_SAVE_FILE, 'w') as f:
+    with open (LAST_PATH_FILE, 'w') as f:
         f.write(dir)
 
 if __name__ == "__main__":
