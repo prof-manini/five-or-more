@@ -25,6 +25,7 @@ class FileOpener:
         r = self.dial.run()
         if r == gtk.RESPONSE_OK:
             self.filename = self. dial.get_filename()
+            set_last_path(os.path.dirname(self.filename))
         else:
             self.filename = ""
         self.dial.destroy()
@@ -56,6 +57,8 @@ class FileSaver:
         self.dial.destroy()
 
 def choose_file_for_open(dir = "", file = "", title = ""):
+    if not dir:
+        dir=get_last_path()
     d = FileOpener(dir, file, title)
     d.show()
     return d.filename

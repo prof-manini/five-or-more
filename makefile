@@ -1,14 +1,17 @@
 clean:
 	rm -f *~
 	bash -c 'rm -f README.{out,tex,log,aux}'
-	(cd lines; make clean)
+	(cd lines/; make clean)
+	(cd ../)
+	(cd data/; make cleaner)
 
 cleaner: clean
 	rm -rf html
 	rm -f TAGS
 	rm -rf README.pdf
-	rm data/* # delete saved games in data/
-	(cd lines; make cleaner)
+	(cd lines/; make cleaner)
+	(cd ../)
+	(cd data/; make cleaner)
 
 check:
 	pychecker *.py
