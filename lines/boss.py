@@ -39,17 +39,13 @@ class Boss:
 			return False
 
 	def save_game(self, file=None):
-	    if not file:
-	    	date = datetime.now().timetuple()[0:7]
-	    	file = SAVE_DIR+"data%d.%d.%d.%d.%d.%d.%d"%date
-
 	    common.write_file(file, [repr(self._game.get_data())])
 	    return file
 
 	def save_tmp(self):
 		common.delete_tmp()
-		date = datetime.now().timetuple()[0:7]
-		file = TMP_DIR+"tmp%d.%d.%d.%d.%d.%d.%d"%date
+		date = datetime.now().timetuple()[0:6]
+		file = TMP_DIR+"tmp%04d.%02d.%02d.%02d.%02d.%02d"%date
 		_,__, next_values, grid, score = self._game.get_data() # salvo solo situazione finale, altrimenti troppi dati
 		common.write_file(file, [repr([0,[], next_values, grid, score])])
 
@@ -82,8 +78,8 @@ class Boss:
 
 		scores = common.read_file(file)
 
-		date = datetime.now().timetuple()[0:7]
-		scores.append("%d %d.%d.%d.%d.%d.%d.%d"%tuple([self.get_score()]+list(date)))
+		date = datetime.now().timetuple()[0:6]
+		scores.append("%d %04d.%02d.%02d.%02d.%02d.%02d"%tuple([self.get_score()]+list(date)))
 		
 		common.write_file(file, scores)
 		return file
@@ -92,7 +88,7 @@ class Boss:
 		if not file:
 			file = SAVE_DIR+"scores"
 		
-		ss = common.read_file(file)#.split("\n")
+		ss = common.read_file(file)
 		scores = dict()
 
 		if common.check_scores(ss):

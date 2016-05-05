@@ -1,6 +1,6 @@
 # -*- coding: iso-latin-1 -*-
 
-import os, crypt, game, random
+import os, crypt, game, random, re
 from subprocess import call
 
 class LinesError(Exception): pass
@@ -107,7 +107,46 @@ def check_grid(rows, size):
     	print(e)
     	raise FileError, "Not correct data: " + e.message
 
+
+def is_int(n, f=0, to=9, numCifre="+"):
+	if numCifre == "+":
+		pattern = "^[%d-%d]+$"%(f, to)
+	else:
+		pattern = "^[%d-%d]{%d}$"%(f, to, numCifre)
+	if re.match(pattern, n):
+		return True
+	return False	
+
+def n_valid(n, max=60):
+	return n>= 0 and n < max
+
 def check_scores(ss): ## controllo validità dati score
+	for s in ss:
+		if len(s.split(" ")) != 2:
+			return False
+			
+		points, date = s.split(" ")
+		if not is_int(points):
+			return False
+
+		points = int(re.match("^[0-9]+$", points).group())
+
+		oo = date.split(".")
+		if len(oo) != 6:
+			return False
+
+		year, month, day, hour, minute, second = oo
+		if not (is_int(year, numCifre=4) and is_int(month, numCifre=2) and \
+				is_int(day, numCifre=2) and is_int(hour, numCifre=2) and \
+				is_int(minute, numCifre=2) and is_int(second, numCifre=2) ):
+			return False
+
+		oo = map(int, oo)
+		
+		if not n_valid(oo[0], max=3000):
+			return False
+		if False in map(n_valid, oo[1:]):
+			return False
 	return True
 
 def random_values(count, zeros):
@@ -123,7 +162,7 @@ def set_random_state(oldstate):
 	random.setstate(oldstate)   
 
 
-def read_file(file, crypting=True):
+def read_file(file, crypting=False):
 	if not (os.path.exists(file) and os.path.isfile(file)):
 		#raise FileError, "File '%s' don't exists."%file
 		return []
@@ -146,7 +185,7 @@ def read_file(file, crypting=True):
 	finally:
 		f.close()
 
-def write_file(file, ss, crypting=True):
+def write_file(file, ss, crypting=False):
 	path, _ = os.path.split(file)
 	if not (os.path.exists(path) and os.path.isdir(path)):
 		try:
@@ -227,5 +266,4 @@ def get_tmp():
 				except:
 					continue
 	return None
-
 		
