@@ -17,7 +17,8 @@ class Boss:
 		common.init_game_dir()		
 		self.new_empty_game()
 
-		#self._count_tmp = 0
+		if not self.get_tmp_data():
+			self.save_tmp()
 
 	# command
 	def new_empty_game(self, size = (9,9)):
@@ -30,6 +31,10 @@ class Boss:
 
 	def load_game(self, file):
 		ss = common.read_file(file)
+
+		#print(eval("[]["))
+		#print(eval(ss[0]))
+		#print(ss)
 
 		data = common.check_data(ss, size = (9,9))
 		if data:
@@ -52,29 +57,27 @@ class Boss:
 		date = datetime.now().timetuple()[0:7]
 		file = TMP_DIR+"tmp%d.%d.%d.%d.%d.%d.%d"%date
 		_,__, next_values, grid, score = self._game.get_data() # salvo solo situazione finale, altrimenti troppi dati
-		common.write_file(file, repr([next_values, grid, score]))
+		common.write_file(file, repr([0,[], next_values, grid, score]))
 
 	def get_tmp_data(self):
 		data_tmp = common.get_tmp()
 		if not data_tmp:
 			return None
 
-		data = "[0,[],%s"%data_tmp[0][1:]
-		data = common.check_data([data], size = (9,9)) # aggiungo dati fittizzi a quelli parziali
-		if data:
-			return data
-		else:
+		data = common.check_data(data_tmp, size = (9,9))
+		if not data:
 			common.delete_tmp()
 			return None
+		return data
 
-	def load_tmp(self):
-		data = get_tmp_data()
+	def load_tmp(self, data=None): # gli passo data già da gui-gui
+		if not data: # se non passo data provo a vedere se c'è
+			data = self.get_tmp_data()
 		if data:
 			self._game  = game.Game(size = (9,9), data = data)
 			self._board = self._game.get_board()
 			return True
-		else:
-			return False
+		return False
 
 	def finalize_game(self):
 		common.delete_tmp()

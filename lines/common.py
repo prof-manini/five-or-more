@@ -23,9 +23,9 @@ def check_pos_in_size(pos, size):
             (pos, r-1, c-1)
         raise LinesError, s
 
-def check_data(ss, size = 9):
+def check_data(ss, size = (9,9)):
 	try:
-		data = eval('/n'.join(ss))		
+		data = eval('/n'.join(ss)) # type(ss) = list
 		story_point, history, next_values, matrix, score = data		
 
 		for move in history:
@@ -75,6 +75,7 @@ def check_data(ss, size = 9):
 		return data
 	except Exception as e:
 	 	print(e)
+	 	print("error log function check_data in common package")
 	 	return None
 
 def check_grid(rows, size):
@@ -122,7 +123,7 @@ def set_random_state(oldstate):
 	random.setstate(oldstate)   
 
 
-def read_file(file):
+def read_file(file, crypting=False):
 	if not (os.path.exists(file) and os.path.isfile(file)):
 		#raise FileError, "File '%s' don't exists."%file
 		return []
@@ -132,19 +133,19 @@ def read_file(file):
 	except Exception as e:
 		raise FileError, "Error to open file '%s'."%file
 
-	ss = []
 	try:
 		ll = f.readlines()
-		for line in ll:
-			ss.append(crypt.decrypt(line))
+
+		if crypting:
+			return crypt.decrypt('/n'.join(ll)).split()
+		else:
+			return ll
 	except Exception as e:
 		raise FileError, "Error to read data from file '%s'."%file
 	finally:
 		f.close()
 
-	return ss
-
-def write_file(file, ss):
+def write_file(file, ss, crypting=False):
 	path, _ = os.path.split(file)
 	if not (os.path.exists(path) and os.path.isdir(path)):
 		try:
@@ -158,7 +159,10 @@ def write_file(file, ss):
 		raise FileError, "Can't create file '%s'\n"%file
 
 	try:
-		ll = [crypt.encrypt(s) for s in ss]
+		if crypting:			
+			ll = [crypt.encrypt(s) for s in ss]
+		else:
+			ll = list(ss)
 		f.writelines(ll)
 	except Exception as e:
 		print e
@@ -217,7 +221,10 @@ def get_tmp():
 		ff = os.listdir(TMP_DIR)
 		for f in ff:
 			if os.path.isfile(TMP_DIR+f):
-				return read_file(TMP_DIR+f)
+				try:
+					return read_file(TMP_DIR+f)
+				except:
+					continue
 	return None
 
 		

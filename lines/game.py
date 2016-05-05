@@ -45,7 +45,7 @@ class Game:
                 if move[0] == RANDOM_STATE:
                     common.set_random_state(move[1]) # ripristino generatore random precedente
                     break
-            common.random_values() # incremento generatore
+            common.random_values(self._NEXT_VALUES_COUNT, 0) # incremento generatore
 
             self.board.load_data(matrix)    	
 

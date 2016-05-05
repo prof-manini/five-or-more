@@ -136,13 +136,7 @@ class Window(gui_base.FullWindow):
         self.selected_pos = None
 
         # mostra la situazione iniziale del gioco
-        self.update_from_boss()
-
-        # controllo che non ci siano state sessioni di gioco interrotte
-        tmp_file = self.boss.get_tmp_data()
-        if tmp_file:
-            ## chiedere all'utente se vuole ripristinare la precedente sessione di gioco
-            print("Last session has been interrupted!")
+        self.update_from_boss()        
 
     def _make_next_stones(self):
         h  = gtk.HBox(gtk.FALSE, 3)
