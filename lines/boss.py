@@ -16,9 +16,7 @@ class Boss:
 	def __init__(self):
 		common.init_game_dir()		
 		self.new_empty_game()
-
-		if not self.get_tmp_data():
-			self.save_tmp()
+		# non posso salvare tmp -> salvo in gui
 
 	# command
 	def new_empty_game(self, size = (9,9)):
@@ -31,10 +29,6 @@ class Boss:
 
 	def load_game(self, file):
 		ss = common.read_file(file)
-
-		#print(eval("[]["))
-		#print(eval(ss[0]))
-		#print(ss)
 
 		data = common.check_data(ss, size = (9,9))
 		if data:
@@ -49,7 +43,7 @@ class Boss:
 	    	date = datetime.now().timetuple()[0:7]
 	    	file = SAVE_DIR+"data%d.%d.%d.%d.%d.%d.%d"%date
 
-	    common.write_file(file, repr(self._game.get_data()))
+	    common.write_file(file, [repr(self._game.get_data())])
 	    return file
 
 	def save_tmp(self):
@@ -57,7 +51,7 @@ class Boss:
 		date = datetime.now().timetuple()[0:7]
 		file = TMP_DIR+"tmp%d.%d.%d.%d.%d.%d.%d"%date
 		_,__, next_values, grid, score = self._game.get_data() # salvo solo situazione finale, altrimenti troppi dati
-		common.write_file(file, repr([0,[], next_values, grid, score]))
+		common.write_file(file, [repr([0,[], next_values, grid, score])])
 
 	def get_tmp_data(self):
 		data_tmp = common.get_tmp()

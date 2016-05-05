@@ -1,3 +1,5 @@
+all: cleaner
+
 clean:
 	rm -f *~
 	bash -c 'rm -f README.{out,tex,log,aux}'
@@ -9,6 +11,7 @@ cleaner: clean
 	rm -rf saves
 	rm -rf README.pdf
 	(cd lines; make cleaner)
+	(cd; rm -rf .five)
 
 check:
 	pychecker *.py

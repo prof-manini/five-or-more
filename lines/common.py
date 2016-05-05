@@ -107,8 +107,8 @@ def check_grid(rows, size):
     	print(e)
     	raise FileError, "Not correct data: " + e.message
 
-def check_scores(ss):
-	pass
+def check_scores(ss): ## controllo validità dati score
+	return True
 
 def random_values(count, zeros):
     "Una lista di COUNT numeri random tra 0 e 8 di cui ZEROS nulli"
@@ -123,7 +123,7 @@ def set_random_state(oldstate):
 	random.setstate(oldstate)   
 
 
-def read_file(file, crypting=False):
+def read_file(file, crypting=True):
 	if not (os.path.exists(file) and os.path.isfile(file)):
 		#raise FileError, "File '%s' don't exists."%file
 		return []
@@ -137,7 +137,8 @@ def read_file(file, crypting=False):
 		ll = f.readlines()
 
 		if crypting:
-			return crypt.decrypt('/n'.join(ll)).split()
+			ss = [crypt.decrypt(l) for l in ll]
+			return ss
 		else:
 			return ll
 	except Exception as e:
@@ -145,7 +146,7 @@ def read_file(file, crypting=False):
 	finally:
 		f.close()
 
-def write_file(file, ss, crypting=False):
+def write_file(file, ss, crypting=True):
 	path, _ = os.path.split(file)
 	if not (os.path.exists(path) and os.path.isdir(path)):
 		try:
