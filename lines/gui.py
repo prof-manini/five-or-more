@@ -215,9 +215,14 @@ class Window(gui_base.FullWindow):
 
     def on_load_game(self, widget):
         s = utils.choose_file_for_open()
-        if s: self.show_message("Loading from: %s" % s)
-        self.boss.load_game(s)
-        self.update_from_boss()
+        if s:
+            self.show_message("Loading from: %s" % s)
+            try:
+                self.boss.load_from_file(s)
+            except common.LinesError:
+                self.show_message("Loading failed. %s is not a valid game save"%s)
+            self.update_from_boss()
+            self.show_message("Loading completed")
 
     def on_save_game(self, widget):
         s = utils.choose_file_for_save()

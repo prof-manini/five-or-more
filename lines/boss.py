@@ -1,5 +1,5 @@
 # -*- coding: iso-latin-1 -*-
-import game
+import game, common
 
 class Boss:
 
@@ -21,9 +21,10 @@ class Boss:
         self._game.move(fc, tc)
 
     def load_from_file(self, file):
-        # check file ....
-        # game.set_data...
-        pass
+        with open (file) as f:
+            s=f.next()
+        data, next_values, score=common.make_datas(s) # read the first line
+        self._game.load_game(data, next_values, score)
 
     def save_to_file(self, file):
         data = self._game.get_raw_data()

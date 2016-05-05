@@ -4,7 +4,7 @@ import common
 
 def make_data(size):
     "Una lista di liste di None con dimensioni SIZE (coppia di interi)"
-    return [[None for c in range(size[1])] for r in range(size[0])] 
+    return [[None for c in range(size[1])] for r in range(size[0])]
 
 def iterate_raw_data(data):
     "Itera una lista di liste fornendo la tripla (riga, colonna, valore)"
@@ -12,11 +12,11 @@ def iterate_raw_data(data):
         for c, v in enumerate(row):
             yield r,c,v
 
-def load_integers_into_data(data, size = None):
-    rows = load_integers(size)
-    for r,c,v in iterate_raw_data(rows):
-        data.set_value((r,c),v)
-      
+# def load_integers_into_data(data, size = None):
+#     rows = load_integers(size)
+#     for r,c,v in iterate_raw_data(rows):
+#         data.set_value((r,c),v)
+
 def get_data_size(data):
     "Le dimensioni (righe, colonne) di una lista di liste"
     return len(data), len(data[0])
@@ -27,7 +27,7 @@ class Board:
         self.data = make_data(size)
         for r,c,v in self:
             self.set_value((r,c), 0)
-            
+
     def __iter__(self):
         for r, row in enumerate(self.data):
             for c, v in enumerate(row):
@@ -53,17 +53,17 @@ class Board:
         "I dati come lista di liste di interi"
         return self.data
 
-    def load_file(self, file):
-        "Legge un file di interi scritti come righe/colonne"
-        load_integers_into_data(file, self.data, size)
+    def load_data(self, values):
+        for r,c,v in iterate_raw_data(values):
+            self.set_value((r,c),v)
 
     def is_free(self, pos):
-        "True se il valore in POS è zero"
-        self.check_pos(pos)       
+        "True se il valore in POS ï¿½ zero"
+        self.check_pos(pos)
         return self.get_value(pos) == 0
 
     def check_pos(self, pos):
-        "Solleva una eccesione se POS è fuori dai limiti di board.get_size()"
+        "Solleva una eccesione se POS ï¿½ fuori dai limiti di board.get_size()"
         common.check_pos_in_size(pos, self.get_size())
 
     def get_all_empty(self):

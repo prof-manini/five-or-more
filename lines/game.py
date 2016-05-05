@@ -4,9 +4,9 @@ import board
 import walker
 import grouper
 
-class Game:
+_NEXT_VALUES_COUNT = 3
 
-    _NEXT_VALUES_COUNT = 3
+class Game:
 
     def __init__(self, size = (9,9)):
         self.size = size
@@ -74,6 +74,14 @@ class Game:
     def get_raw_data(self):
         return self.board.get_raw_data()
 
+    def load_game(self, data, next_values, score):
+        common.check_data(data)
+        common.check_next_values(next_values)
+        common.check_score(score)
+        self.board.load_data(data)
+        self._next_values=next_values
+        self._score=score
+
     # private
     def _take_next_values(self):
         vv = self.get_next_values()
@@ -115,7 +123,7 @@ class Game:
         return sum(map(len, gg))
 
     def _update_next_values(self):
-        self._next_values = common.random_values(self._NEXT_VALUES_COUNT, 0)
+        self._next_values = common.random_values(_NEXT_VALUES_COUNT, 0)
 
 #     def add_some_random(self, count = 3):
 #         "Aggiunge COUNT pietre con valori random (non nulli)"
