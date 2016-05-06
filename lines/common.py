@@ -162,8 +162,8 @@ def set_random_state(oldstate):
 	random.setstate(oldstate)   
 
 
-SPECIAL_S = "($^)"
-def read_file(file, crypting=True):
+#SPECIAL_S = "($^)"
+def read_file(file, crypting=False):
 	if not (os.path.exists(file) and os.path.isfile(file)):
 		#raise FileError, "File '%s' don't exists."%file
 		return []
@@ -175,9 +175,11 @@ def read_file(file, crypting=True):
 
 	try:
 		ll = f.readlines()
-		if len(ll) != 1:
-			raise FileError, "Bad file '%s'."%file
-		ll = ll[0].split(SPECIAL_S)
+		print(ll)
+
+#		if len(ll) != 1:
+#			raise FileError, "Bad file '%s'."%file
+#		ll = ll[0].split(SPECIAL_S)
 
 		if crypting:
 			ss = [crypt.decrypt(l) for l in ll]
@@ -189,7 +191,7 @@ def read_file(file, crypting=True):
 	finally:
 		f.close()
 
-def write_file(file, ss, crypting=True):
+def write_file(file, ss, crypting=False):
 	path, _ = os.path.split(file)
 	if not (os.path.exists(path) and os.path.isdir(path)):
 		try:
@@ -208,8 +210,8 @@ def write_file(file, ss, crypting=True):
 		else:
 			ll = list(ss)
 
-		line = SPECIAL_S.join(ll) ## aggiungo stringa speciale come separatore, altrimenti conflitto con crypt di generatore random
-		f.write(line)
+#		ll = SPECIAL_S.join(ll) ## aggiungo stringa speciale come separatore, altrimenti conflitto con crypt di generatore random
+		f.writelines(ll)
 	except Exception as e:
 		print e
 		raise FileError, "Error to write data to file '%s'\n"%file
