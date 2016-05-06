@@ -13,7 +13,7 @@ if __name__ == "__main__":
     if tmp_data:
         ## chiedere all'utente se vuole ripristinare la precedente sessione di gioco
         print("Last session has been interrupted!")
-        ripristinate = raw_input("Do you want to restore last session?(Y/n): ")
+        ripristinate = raw_input("Do you want to restore last game session?(Y/n): ")
         
         if ripristinate.lower() in ("y", "yes") or not ripristinate:
         	b.load_tmp(tmp_data)

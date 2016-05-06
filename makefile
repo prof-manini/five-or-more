@@ -1,4 +1,5 @@
 all: cleaner
+	./gui-gui.py
 
 clean:
 	rm -f *~
