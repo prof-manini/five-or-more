@@ -162,8 +162,7 @@ def set_random_state(oldstate):
 	random.setstate(oldstate)   
 
 
-#SPECIAL_S = "($^)"
-def read_file(file, crypting=False):
+def read_file(file, crypting=True):
 	if not (os.path.exists(file) and os.path.isfile(file)):
 		#raise FileError, "File '%s' don't exists."%file
 		return []
@@ -175,23 +174,18 @@ def read_file(file, crypting=False):
 
 	try:
 		ll = f.readlines()
-		print(ll)
-
-#		if len(ll) != 1:
-#			raise FileError, "Bad file '%s'."%file
-#		ll = ll[0].split(SPECIAL_S)
+		l = "".join(ll)
 
 		if crypting:
-			ss = [crypt.decrypt(l) for l in ll]
-			return ss
-		else:
-			return ll
+			l = crypt.decrypt(l)
+
+		return l.split("\n")
 	except Exception as e:
 		raise FileError, "Error to read data from file '%s'."%file
 	finally:
 		f.close()
 
-def write_file(file, ss, crypting=False):
+def write_file(file, ss, crypting=True):
 	path, _ = os.path.split(file)
 	if not (os.path.exists(path) and os.path.isdir(path)):
 		try:
@@ -205,13 +199,11 @@ def write_file(file, ss, crypting=False):
 		raise FileError, "Can't create file '%s'\n"%file
 
 	try:
+		ll = "\n".join(list(ss))
 		if crypting:			
-			ll = [crypt.encrypt(s) for s in ss]
-		else:
-			ll = list(ss)
+			ll = crypt.encrypt(ll)
 
-#		ll = SPECIAL_S.join(ll) ## aggiungo stringa speciale come separatore, altrimenti conflitto con crypt di generatore random
-		f.writelines(ll)
+		f.write(ll)
 	except Exception as e:
 		print e
 		raise FileError, "Error to write data to file '%s'\n"%file
@@ -276,3 +268,11 @@ def get_tmp():
 					continue
 	return None
 		
+if __name__ == '__main__':
+	with open("/tmp/x.txt", "w") as f:
+		f.write("ciao\nmondo\ncome va?")
+
+	with open("/tmp/x.txt") as f:
+		ll = f.readlines()
+		print(len(ll))
+		print(ll)
